@@ -82,48 +82,49 @@ h1,h2,h3{font-family:var(--font-display)}
 .img-preview img{width:100%;height:100%;object-fit:cover;display:block}
 .hint{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5}
 .empty{color:var(--muted);font-size:14px;padding:16px 0}
-/* modello badge */
-.model-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);margin-left:6px}
 @keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
 .loading{animation:shimmer 1.4s ease-in-out infinite}
-@media(max-width:900px){
-  .grid2{grid-template-columns:1fr}
-  .ch-body{grid-template-columns:1fr}
-}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}.ch-body{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="container">
-
   <div class="header">
     <div class="header-title">
       <span style="font-size:28px">📖</span>
       <h1>AI Storybook Studio</h1>
     </div>
     <div class="header-pills">
-      <span class="pill" id="pill-gemini-model">Gemini</span>
+      <span class="pill" id="pill-provider">Groq</span>
+      <span class="pill" id="pill-text-model">llama-3.3-70b-versatile</span>
       <span class="pill">Pollinations.AI</span>
       <span class="pill">No backend needed</span>
     </div>
   </div>
 
   <div class="grid2">
-    <!-- IMPOSTAZIONI -->
     <div class="card mb20">
       <div class="card-title">⚙️ Impostazioni</div>
-      <div class="card-sub">La Gemini API key è salvata solo in memoria (sessione corrente).</div>
+      <div class="card-sub">Usa una Groq API key per testo e analisi immagini. La chiave resta solo nella sessione corrente del browser.</div>
       <div class="field">
-        <label>Gemini API key</label>
-        <input type="password" id="inp-apikey" placeholder="AIza..."/>
+        <label>Groq API key</label>
+        <input type="password" id="inp-apikey" placeholder="gsk_..."/>
       </div>
       <div class="row">
         <div class="field">
-          <label>Modello Gemini</label>
-          <select id="inp-geminimodel">
-            <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite ⭐ (consigliato)</option>
-            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
-            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-            <option value="gemini-1.5-flash-8b">gemini-1.5-flash-8b</option>
+          <label>Modello testo</label>
+          <select id="inp-textmodel">
+            <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+            <option value="qwen-qwq-32b">qwen-qwq-32b</option>
+            <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b</option>
+            <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Modello vision</label>
+          <select id="inp-visionmodel">
+            <option value="meta-llama/llama-4-scout-17b-16e-instruct">meta-llama/llama-4-scout-17b-16e-instruct</option>
+            <option value="meta-llama/llama-4-maverick-17b-128e-instruct">meta-llama/llama-4-maverick-17b-128e-instruct</option>
           </select>
         </div>
       </div>
@@ -151,7 +152,6 @@ h1,h2,h3{font-family:var(--font-display)}
       <div class="status" id="status-settings"></div>
     </div>
 
-    <!-- IDEA STORIA -->
     <div class="card mb20">
       <div class="card-title">💡 Idea storia</div>
       <div class="card-sub">Compila, raffina la versione breve e poi genera i 10 capitoli.</div>
@@ -187,43 +187,31 @@ h1,h2,h3{font-family:var(--font-display)}
     </div>
   </div>
 
-  <!-- PROTAGONISTI -->
   <div class="card mb20">
     <div class="card-title">🧑‍🎨 Protagonisti</div>
     <div class="card-sub">Carica le immagini, genera la descrizione con AI, modificala e salvala. Sarà usata nei prompt dei capitoli.</div>
     <button class="btn btn-cyan" id="btn-add-char">+ Aggiungi personaggio</button>
-    <div class="char-grid" id="char-grid">
-      <div class="empty">Nessun personaggio aggiunto.</div>
-    </div>
+    <div class="char-grid" id="char-grid"><div class="empty">Nessun personaggio aggiunto.</div></div>
   </div>
 
-  <!-- VERSIONE BREVE -->
   <div class="card mb20">
     <div class="card-title">📄 Versione breve</div>
     <div class="story-box" id="short-story-box">Nessuna versione breve generata.</div>
   </div>
 
-  <!-- CAPITOLI -->
   <div class="card">
     <div class="card-title">📖 Capitoli</div>
     <div class="card-sub">Ogni capitolo include solo i personaggi citati in quella scena. Modifica il prompt prima di generare l'immagine.</div>
-    <div class="chapter-list" id="chapter-list">
-      <div class="empty">Nessun capitolo generato.</div>
-    </div>
+    <div class="chapter-list" id="chapter-list"><div class="empty">Nessun capitolo generato.</div></div>
   </div>
-
 </div>
-<script>
-// ─── MODELLI GEMINI DISPONIBILI (tutti free tier) ─────────────────────────────
-// gemini-2.0-flash-lite  → più veloce, meno quota usata, ideale per testo
-// gemini-2.0-flash       → bilanciato, supporta immagini in input
-// gemini-1.5-flash       → stabile, ampiamente supportato
-// gemini-1.5-flash-8b    → ultra-leggero, fallback estremo
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
+<script>
 const S = {
   apiKey: '',
-  geminiModel: 'gemini-2.0-flash-lite',
+  provider: 'groq',
+  textModel: 'llama-3.3-70b-versatile',
+  visionModel: 'meta-llama/llama-4-scout-17b-16e-instruct',
   imgModel: 'flux',
   imgSize: 1024,
   globalSeed: '',
@@ -235,58 +223,90 @@ const S = {
 
 let _uid = 0;
 function uid(){ return 'c'+(++_uid)+'_'+Math.random().toString(36).slice(2,7); }
+function setStatus(id,msg,type=''){ const el=document.getElementById(id); if(!el) return; el.textContent=msg; el.className='status'+(type?' '+type:''); }
+function stripFences(t){ return t.trim().replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim(); }
 
-function setStatus(id, msg, type=''){
-  const el=document.getElementById(id);
-  if(!el) return;
-  el.textContent=msg;
-  el.className='status'+(type?' '+type:'');
+function readInputs(){
+  S.apiKey=document.getElementById('inp-apikey').value.trim();
+  S.textModel=document.getElementById('inp-textmodel').value;
+  S.visionModel=document.getElementById('inp-visionmodel').value;
+  S.imgModel=document.getElementById('inp-imgmodel').value;
+  S.imgSize=Number(document.getElementById('inp-imgsize').value)||1024;
+  S.globalSeed=document.getElementById('inp-seed').value.trim();
+  S.title=document.getElementById('inp-title').value.trim();
+  S.audience=document.getElementById('inp-audience').value.trim();
+  S.tone=document.getElementById('inp-tone').value.trim();
+  S.world=document.getElementById('inp-world').value.trim();
+  S.idea=document.getElementById('inp-idea').value.trim();
 }
 
-function stripFences(t){
-  return t.trim()
-    .replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim();
-}
-
-// ─── GEMINI API ───────────────────────────────────────────────────────────────
-async function callGemini({ prompt, images=[], temperature=0.7, maxTokens=5000 }){
-  if(!S.apiKey) throw new Error('⚠️ Inserisci e salva prima la Gemini API key.');
-  const parts=[];
-  for(const img of images){
-    parts.push({ inline_data:{ mime_type:img.mimeType, data:img.base64 } });
-  }
-  parts.push({ text:prompt });
-
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(S.geminiModel)}:generateContent?key=${encodeURIComponent(S.apiKey)}`;
-
-  const res = await fetch(endpoint, {
+async function callGroqText({ prompt, temperature=0.7, maxTokens=2500 }){
+  if(!S.apiKey) throw new Error('⚠️ Inserisci e salva prima la Groq API key.');
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      contents:[{role:'user', parts}],
-      generationConfig:{ temperature, maxOutputTokens:maxTokens }
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':`Bearer ${S.apiKey}`
+    },
+    body: JSON.stringify({
+      model: S.textModel,
+      messages: [{ role:'user', content: prompt }],
+      temperature,
+      max_tokens: maxTokens
     })
   });
-
+  const txt = await res.text();
   if(!res.ok){
-    const txt=await res.text();
-    // messaggio di errore leggibile
-    let msg=`Gemini ${res.status}`;
+    let msg = `Groq ${res.status}`;
     try{
-      const j=JSON.parse(txt);
-      msg+=': '+( j?.error?.message||txt.slice(0,200));
-    }catch{ msg+=': '+txt.slice(0,200); }
+      const j = JSON.parse(txt);
+      msg += ': ' + (j?.error?.message || txt.slice(0,300));
+    } catch { msg += ': ' + txt.slice(0,300); }
     throw new Error(msg);
   }
-
-  const data=await res.json();
-  const text=(data?.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();
-  if(!text) throw new Error('Gemini non ha restituito testo. Riprova.');
-  return text;
+  const data = JSON.parse(txt);
+  const out = data?.choices?.[0]?.message?.content?.trim();
+  if(!out) throw new Error('Groq non ha restituito testo.');
+  return out;
 }
 
-// ─── IMAGE UTILS ─────────────────────────────────────────────────────────────
-async function fileToData(file, maxPx=768){
+async function callGroqVision({ prompt, imageDataUrl, maxTokens=1200, temperature=0.4 }){
+  if(!S.apiKey) throw new Error('⚠️ Inserisci e salva prima la Groq API key.');
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':`Bearer ${S.apiKey}`
+    },
+    body: JSON.stringify({
+      model: S.visionModel,
+      messages: [{
+        role:'user',
+        content:[
+          { type:'text', text: prompt },
+          { type:'image_url', image_url:{ url: imageDataUrl } }
+        ]
+      }],
+      temperature,
+      max_tokens: maxTokens
+    })
+  });
+  const txt = await res.text();
+  if(!res.ok){
+    let msg = `Groq vision ${res.status}`;
+    try{
+      const j = JSON.parse(txt);
+      msg += ': ' + (j?.error?.message || txt.slice(0,300));
+    } catch { msg += ': ' + txt.slice(0,300); }
+    throw new Error(msg);
+  }
+  const data = JSON.parse(txt);
+  const out = data?.choices?.[0]?.message?.content?.trim();
+  if(!out) throw new Error('Groq vision non ha restituito testo.');
+  return out;
+}
+
+async function fileToData(file,maxPx=1024){
   const bmp=await createImageBitmap(file);
   const scale=Math.min(1,maxPx/Math.max(bmp.width,bmp.height));
   const w=Math.round(bmp.width*scale), h=Math.round(bmp.height*scale);
@@ -294,8 +314,8 @@ async function fileToData(file, maxPx=768){
   cv.width=w; cv.height=h;
   cv.getContext('2d').drawImage(bmp,0,0,w,h);
   const mime=file.type==='image/png'?'image/png':'image/jpeg';
-  const dataUrl=cv.toDataURL(mime,0.85);
-  return { dataUrl, base64:dataUrl.split(',')[1], mimeType:mime };
+  const dataUrl=cv.toDataURL(mime,0.88);
+  return { dataUrl, mimeType:mime };
 }
 
 function pollinationsUrl(prompt, seed){
@@ -310,28 +330,13 @@ function pollinationsUrl(prompt, seed){
   return { url:`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params}&_t=${Date.now()}`, seed:s };
 }
 
-// ─── SETTINGS ────────────────────────────────────────────────────────────────
-function readInputs(){
-  S.apiKey       = document.getElementById('inp-apikey').value.trim();
-  S.geminiModel  = document.getElementById('inp-geminimodel').value;
-  S.imgModel     = document.getElementById('inp-imgmodel').value;
-  S.imgSize      = Number(document.getElementById('inp-imgsize').value)||1024;
-  S.globalSeed   = document.getElementById('inp-seed').value.trim();
-  S.title        = document.getElementById('inp-title').value.trim();
-  S.audience     = document.getElementById('inp-audience').value.trim();
-  S.tone         = document.getElementById('inp-tone').value.trim();
-  S.world        = document.getElementById('inp-world').value.trim();
-  S.idea         = document.getElementById('inp-idea').value.trim();
-}
-
 document.getElementById('btn-save-settings').addEventListener('click', ()=>{
   readInputs();
-  // aggiorna pill modello nell'header
-  document.getElementById('pill-gemini-model').textContent = S.geminiModel;
-  setStatus('status-settings','Impostazioni salvate ✓ — Modello: '+S.geminiModel,'ok');
+  document.getElementById('pill-provider').textContent='Groq';
+  document.getElementById('pill-text-model').textContent=S.textModel;
+  setStatus('status-settings',`Impostazioni salvate ✓ — ${S.textModel}`,'ok');
 });
 
-// ─── REFINE SHORT ─────────────────────────────────────────────────────────────
 document.getElementById('btn-refine').addEventListener('click', async ()=>{
   readInputs();
   if(!S.idea){ setStatus('status-story','Scrivi prima un\'idea base.','err'); return; }
@@ -339,19 +344,11 @@ document.getElementById('btn-refine').addEventListener('click', async ()=>{
   btn.disabled=true;
   setStatus('status-story','Raffinamento in corso...','warn');
   try{
-    const charLines=S.characters.filter(c=>c.name.trim())
-      .map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n')
-      ||'- nessun protagonista definito';
-
-    const result=await callGemini({
-      prompt:`Rielabora questa idea in una versione breve coinvolgente di 120-180 parole, in italiano.
-Target: ${S.audience||'bambini'} | Tono: ${S.tone||'dolce e avventuroso'} | Ambientazione: ${S.world||'libera'} | Titolo: ${S.title||'senza titolo'}
-Protagonisti:
-${charLines}
-Idea originale:
-${S.idea}
-Restituisci SOLO il testo finale, senza titoli o intestazioni.`,
-      temperature:0.7, maxTokens:500
+    const charLines=S.characters.filter(c=>c.name.trim()).map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n')||'- nessun protagonista definito';
+    const result=await callGroqText({
+      prompt:`Rielabora questa idea in una versione breve coinvolgente di 120-180 parole, in italiano.\nTarget: ${S.audience||'bambini'} | Tono: ${S.tone||'dolce e avventuroso'} | Ambientazione: ${S.world||'libera'} | Titolo: ${S.title||'senza titolo'}\nProtagonisti:\n${charLines}\nIdea originale:\n${S.idea}\nRestituisci SOLO il testo finale, senza titoli o intestazioni.`,
+      temperature:0.7,
+      maxTokens:700
     });
     S.shortVersion=result.trim();
     document.getElementById('short-story-box').textContent=S.shortVersion;
@@ -360,43 +357,23 @@ Restituisci SOLO il testo finale, senza titoli o intestazioni.`,
   finally{ btn.disabled=false; }
 });
 
-// ─── GENERATE STORY ───────────────────────────────────────────────────────────
 document.getElementById('btn-genstory').addEventListener('click', async ()=>{
   readInputs();
   const named=S.characters.filter(c=>c.name.trim());
   if(!named.length){ setStatus('status-story','Aggiungi almeno un personaggio con nome.','err'); return; }
   const btn=document.getElementById('btn-genstory');
   btn.disabled=true;
-  setStatus('status-story','Generazione storia in corso (20-40s)...','warn');
+  setStatus('status-story','Generazione storia in corso...','warn');
   try{
     const charLines=named.map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n');
     const base=S.shortVersion||S.idea||'storia per bambini';
-
-    const raw=await callGemini({
-      prompt:`Crea una storia illustrata in italiano per ${S.audience||'bambini'} divisa in ESATTAMENTE 10 capitoli.
-Idea base: ${base}
-Titolo: ${S.title||'senza titolo'} | Tono: ${S.tone||'dolce'} | Ambientazione: ${S.world||'libera'}
-Protagonisti disponibili:
-${charLines}
-
-REGOLE:
-1. Restituisci SOLO JSON valido, senza markdown, senza testo aggiuntivo prima o dopo.
-2. "chapters" deve avere ESATTAMENTE 10 elementi.
-3. "characters": SOLO i nomi dei personaggi EFFETTIVAMENTE presenti in quel capitolo.
-4. Usa SOLO nomi dalla lista protagonisti sopra.
-5. "text": 150-220 parole per capitolo, ben scritto e scorrevole.
-6. "summary": 1-2 frasi.
-7. Continuità narrativa. Finale soddisfacente.
-
-JSON da restituire (SOLO questo, nient'altro):
-{"shortVersion":"...","chapters":[{"number":1,"title":"...","summary":"...","text":"...","characters":["Nome1"]}]}`,
-      temperature:0.75, maxTokens:6000
+    const raw=await callGroqText({
+      prompt:`Crea una storia illustrata in italiano per ${S.audience||'bambini'} divisa in ESATTAMENTE 10 capitoli.\nIdea base: ${base}\nTitolo: ${S.title||'senza titolo'} | Tono: ${S.tone||'dolce'} | Ambientazione: ${S.world||'libera'}\nProtagonisti disponibili:\n${charLines}\n\nREGOLE:\n1. Restituisci SOLO JSON valido, senza markdown, senza testo aggiuntivo.\n2. "chapters" deve avere ESATTAMENTE 10 elementi.\n3. "characters": SOLO i nomi dei personaggi EFFETTIVAMENTE presenti in quel capitolo.\n4. Usa SOLO nomi dalla lista protagonisti sopra.\n5. "text": 150-220 parole per capitolo.\n6. "summary": 1-2 frasi.\n7. Continuità narrativa. Finale soddisfacente.\n\nJSON da restituire:\n{"shortVersion":"...","chapters":[{"number":1,"title":"...","summary":"...","text":"...","characters":["Nome1"]}]}`,
+      temperature:0.75,
+      maxTokens:7000
     });
-
     const parsed=JSON.parse(stripFences(raw));
-    if(!Array.isArray(parsed.chapters)||parsed.chapters.length!==10)
-      throw new Error('La risposta non contiene esattamente 10 capitoli. Riprova.');
-
+    if(!Array.isArray(parsed.chapters)||parsed.chapters.length!==10) throw new Error('La risposta non contiene esattamente 10 capitoli.');
     S.shortVersion=parsed.shortVersion||S.shortVersion;
     S.chapters=parsed.chapters.map((ch,i)=>({
       number:Number(ch.number||i+1),
@@ -406,7 +383,6 @@ JSON da restituire (SOLO questo, nient'altro):
       characters:Array.isArray(ch.characters)?ch.characters:[],
       imagePrompt:'', imageUrl:'', imageSeed:''
     }));
-
     document.getElementById('short-story-box').textContent=S.shortVersion||'';
     renderChapters();
     setStatus('status-story',`Storia generata! ${S.chapters.length} capitoli pronti ✓`,'ok');
@@ -414,7 +390,6 @@ JSON da restituire (SOLO questo, nient'altro):
   finally{ btn.disabled=false; }
 });
 
-// ─── CHARACTERS ───────────────────────────────────────────────────────────────
 document.getElementById('btn-add-char').addEventListener('click', ()=>{
   S.characters.push({ id:uid(), name:'', imageDataUrl:'', mimeType:'', description:'' });
   renderCharacters();
@@ -423,25 +398,18 @@ document.getElementById('btn-add-char').addEventListener('click', ()=>{
 function renderCharacters(){
   const grid=document.getElementById('char-grid');
   grid.innerHTML='';
-  if(!S.characters.length){
-    grid.innerHTML='<div class="empty">Nessun personaggio aggiunto.</div>';
-    return;
-  }
+  if(!S.characters.length){ grid.innerHTML='<div class="empty">Nessun personaggio aggiunto.</div>'; return; }
   S.characters.forEach(char=>grid.appendChild(buildCharCard(char)));
 }
 
 function buildCharCard(char){
   const card=document.createElement('div'); card.className='char-card';
-
   const top=document.createElement('div'); top.className='char-top';
   const thumb=document.createElement('div'); thumb.className='char-thumb'; thumb.id='thumb_'+char.id;
-  if(char.imageDataUrl){
-    const img=document.createElement('img'); img.src=char.imageDataUrl; img.alt=char.name||'';
-    thumb.appendChild(img);
-  } else { thumb.textContent='Nessuna\nimmagine'; }
+  if(char.imageDataUrl){ const img=document.createElement('img'); img.src=char.imageDataUrl; img.alt=char.name||''; thumb.appendChild(img); }
+  else { thumb.textContent='Nessuna\nimmagine'; }
 
   const info=document.createElement('div'); info.className='char-info';
-
   const fName=document.createElement('div'); fName.className='field';
   const lName=document.createElement('label'); lName.textContent='Nome';
   const iName=document.createElement('input'); iName.type='text'; iName.value=char.name; iName.placeholder='Es. Leo il coniglietto';
@@ -466,43 +434,27 @@ function buildCharCard(char){
 
   const fDesc=document.createElement('div'); fDesc.className='field';
   const lDesc=document.createElement('label'); lDesc.textContent='Descrizione (usata nei prompt immagine)';
-  const taDesc=document.createElement('textarea');
-  taDesc.id='desc_'+char.id; taDesc.value=char.description||''; taDesc.placeholder='Genera o scrivi la descrizione...';
+  const taDesc=document.createElement('textarea'); taDesc.id='desc_'+char.id; taDesc.value=char.description||''; taDesc.placeholder='Genera o scrivi la descrizione...';
   taDesc.addEventListener('input',e=>{ char.description=e.target.value; });
   fDesc.append(lDesc,taDesc);
 
   const btnRow=document.createElement('div'); btnRow.className='row'; btnRow.style.marginTop='8px';
-
   const btnAnalyze=document.createElement('button'); btnAnalyze.className='btn btn-cyan'; btnAnalyze.textContent='🔍 Genera descrizione da immagine';
   btnAnalyze.addEventListener('click', async ()=>{
     if(!char.imageDataUrl){ alert('Carica prima un\'immagine.'); return; }
-    // l'analisi immagine richiede un modello che supporti vision — forziamo 2.0-flash
-    const modelBackup=S.geminiModel;
-    if(S.geminiModel==='gemini-2.0-flash-lite'||S.geminiModel==='gemini-1.5-flash-8b'){
-      S.geminiModel='gemini-2.0-flash';
-    }
     btnAnalyze.disabled=true; btnAnalyze.textContent='⏳ Analisi...';
     try{
-      const [,b64]=char.imageDataUrl.split(',');
-      const mMatch=char.imageDataUrl.match(/data:(.*?);base64/);
-      const result=await callGemini({
-        prompt:`Analizza questa immagine e scrivi una descrizione visuale dettagliata in italiano, utile per generare illustrazioni coerenti in stile cartoon da libro per bambini.
-Includi: età apparente, corporatura, capelli (colore, lunghezza, stile), occhi, tratti distintivi, abbigliamento, accessori, espressione di base, palette colori.
-NON descrivere lo sfondo.
-${char.name?'Nome: '+char.name:''}
-Chiudi con: "Resa visiva: cartoon children book illustration, linee morbide, colori vivaci e coerenti."
-Restituisci SOLO il testo della descrizione.`,
-        images:[{ base64:b64, mimeType:mMatch?mMatch[1]:'image/jpeg' }],
-        temperature:0.4, maxTokens:600
+      const result=await callGroqVision({
+        prompt:`Analizza questa immagine e scrivi una descrizione visuale dettagliata in italiano, utile per generare illustrazioni coerenti in stile cartoon da libro per bambini. Includi: età apparente, corporatura, capelli, occhi, tratti distintivi, abbigliamento, accessori, espressione di base, palette colori. NON descrivere lo sfondo. ${char.name?'Nome: '+char.name:''} Chiudi con: "Resa visiva: cartoon children book illustration, linee morbide, colori vivaci e coerenti." Restituisci SOLO il testo della descrizione.`,
+        imageDataUrl: char.imageDataUrl,
+        maxTokens: 900,
+        temperature: 0.4
       });
       char.description=result.trim();
       const ta=document.getElementById('desc_'+char.id);
       if(ta) ta.value=char.description;
     }catch(e){ alert(e.message); }
-    finally{
-      S.geminiModel=modelBackup;
-      btnAnalyze.disabled=false; btnAnalyze.textContent='🔍 Genera descrizione da immagine';
-    }
+    finally{ btnAnalyze.disabled=false; btnAnalyze.textContent='🔍 Genera descrizione da immagine'; }
   });
 
   const btnSave=document.createElement('button'); btnSave.className='btn btn-accent'; btnSave.textContent='💾 Salva';
@@ -521,20 +473,15 @@ Restituisci SOLO il testo della descrizione.`,
     renderCharacters();
     renderChapters();
   });
-
   btnRow.append(btnAnalyze,btnSave,btnDel);
   card.append(top,fDesc,btnRow);
   return card;
 }
 
-// ─── CHAPTERS ─────────────────────────────────────────────────────────────────
 function renderChapters(){
   const list=document.getElementById('chapter-list');
   list.innerHTML='';
-  if(!S.chapters.length){
-    list.innerHTML='<div class="empty">Nessun capitolo generato.</div>';
-    return;
-  }
+  if(!S.chapters.length){ list.innerHTML='<div class="empty">Nessun capitolo generato.</div>'; return; }
   S.chapters.forEach((ch,idx)=>list.appendChild(buildChapterCard(ch,idx)));
 }
 
@@ -543,23 +490,21 @@ function refreshChapterTags(){
     const el=document.getElementById('chtags_'+idx);
     if(!el) return;
     el.innerHTML='';
-    const names=ch.characters.length?ch.characters:['Nessun personaggio'];
-    names.forEach(n=>{ const s=document.createElement('span'); s.className='ch-tag'; s.textContent=n; el.appendChild(s); });
+    (ch.characters.length?ch.characters:['Nessun personaggio']).forEach(n=>{
+      const s=document.createElement('span'); s.className='ch-tag'; s.textContent=n; el.appendChild(s);
+    });
   });
 }
 
 function buildChapterCard(ch,idx){
   const card=document.createElement('div'); card.className='ch-card';
-
   const head=document.createElement('div'); head.className='ch-head';
   const titleDiv=document.createElement('div');
   const h3=document.createElement('h3'); h3.textContent=`Capitolo ${ch.number} · ${ch.title}`;
   const sumDiv=document.createElement('div'); sumDiv.className='ch-summary'; sumDiv.textContent=ch.summary||'';
   titleDiv.append(h3,sumDiv);
   const tags=document.createElement('div'); tags.className='ch-tags'; tags.id='chtags_'+idx;
-  (ch.characters.length?ch.characters:['Nessun personaggio']).forEach(n=>{
-    const s=document.createElement('span'); s.className='ch-tag'; s.textContent=n; tags.appendChild(s);
-  });
+  (ch.characters.length?ch.characters:['Nessun personaggio']).forEach(n=>{ const s=document.createElement('span'); s.className='ch-tag'; s.textContent=n; tags.appendChild(s); });
   head.append(titleDiv,tags);
 
   const body=document.createElement('div'); body.className='ch-body';
@@ -575,7 +520,6 @@ function buildChapterCard(ch,idx){
   fPrompt.append(lPrompt,taPrompt);
 
   const btnRow2=document.createElement('div'); btnRow2.className='row'; btnRow2.style.marginTop='8px';
-
   const btnGP=document.createElement('button'); btnGP.className='btn btn-cyan'; btnGP.textContent='✨ Genera prompt';
   btnGP.addEventListener('click', async ()=>{
     btnGP.disabled=true; btnGP.textContent='⏳ ...';
@@ -598,18 +542,14 @@ function buildChapterCard(ch,idx){
     catch(e){ alert(e.message); }
     finally{ btnGI.disabled=false; btnGI.textContent='🎨 Genera immagine'; }
   });
-
   btnRow2.append(btnGP,btnSP,btnGI);
 
   const preview=document.createElement('div'); preview.className='img-preview'; preview.id='prev_'+idx;
-  if(ch.imageUrl){
-    const img=document.createElement('img'); img.src=ch.imageUrl; img.alt='Cap. '+ch.number;
-    preview.appendChild(img);
-  } else { preview.textContent='Nessuna immagine generata.'; }
+  if(ch.imageUrl){ const img=document.createElement('img'); img.src=ch.imageUrl; img.alt='Cap. '+ch.number; preview.appendChild(img); }
+  else { preview.textContent='Nessuna immagine generata.'; }
 
   const hint=document.createElement('div'); hint.className='hint';
   hint.textContent='Personaggi in questa scena: '+(ch.characters.join(', ')||'nessuno');
-
   right.append(fPrompt,btnRow2,preview,hint);
   body.append(left,right);
   card.append(head,body);
@@ -619,18 +559,11 @@ function buildChapterCard(ch,idx){
 async function generateChapterPrompt(idx){
   const ch=S.chapters[idx];
   const rel=S.characters.filter(c=>ch.characters.includes(c.name));
-  const charBlock=rel.length
-    ? rel.map(c=>`- ${c.name}: ${c.description||'no description'}`).join('\n')
-    : '(no specific character — create an atmospheric scene)';
-  ch.imagePrompt=await callGemini({
-    prompt:`Write ONE image generation prompt in English for this children's book chapter illustration.
-Chapter: ${ch.title}
-Summary: ${ch.summary}
-Text: ${ch.text}
-Characters in this chapter:
-${charBlock}
-RULES: cartoon children book illustration, soft lines, vibrant colors, warm lighting. NO text, NO letters, NO watermarks. Describe poses, expressions, environment, mood. Output ONLY the final prompt.`,
-    temperature:0.65, maxTokens:400
+  const charBlock=rel.length ? rel.map(c=>`- ${c.name}: ${c.description||'no description'}`).join('\n') : '(no specific character — create an atmospheric scene)';
+  ch.imagePrompt=await callGroqText({
+    prompt:`Write ONE image generation prompt in English for this children's book chapter illustration.\nChapter: ${ch.title}\nSummary: ${ch.summary}\nText: ${ch.text}\nCharacters in this chapter:\n${charBlock}\nRULES: include ONLY the characters listed above. cartoon children book illustration, soft lines, vibrant colors, warm lighting. NO text, NO letters, NO watermarks. Describe poses, expressions, environment, mood. Output ONLY the final prompt.`,
+    temperature:0.65,
+    maxTokens:500
   });
 }
 
