@@ -18,13 +18,9 @@
   --muted:#7d8590;
   --faint:#3d444d;
   --accent:#58a6ff;
-  --accent-hover:#79b8ff;
   --green:#3fb950;
-  --green-hover:#56d364;
   --cyan:#39c5cf;
-  --cyan-hover:#56d3dd;
   --red:#f85149;
-  --red-hover:#ff6a60;
   --orange:#d29922;
   --shadow:0 8px 24px rgba(0,0,0,0.4);
   --radius:12px;
@@ -35,47 +31,25 @@
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
 h1,h2,h3{font-family:var(--font-display)}
 .container{max-width:1280px;margin:0 auto;padding:24px 20px 80px}
-
-/* HEADER */
-.header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 24px;margin-bottom:24px;
-  background:var(--surface);border:1px solid var(--border);border-radius:16px;
-  box-shadow:var(--shadow);
-}
+.header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:16px 24px;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
 .header-title{display:flex;align-items:center;gap:12px}
 .header-title h1{font-size:22px;font-weight:800;background:linear-gradient(135deg,#58a6ff,#39c5cf);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .header-pills{display:flex;gap:8px;flex-wrap:wrap}
 .pill{padding:4px 10px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid var(--border);font-size:12px;color:var(--muted)}
-
-/* GRID LAYOUT */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:0}
 .card-title{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
 .card-sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
-
-/* FORM */
+.mb20{margin-bottom:20px}
 .field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
 .field label{font-size:13px;font-weight:600;color:#8b949e}
-.field input,.field textarea,.field select{
-  background:var(--surface2);color:var(--text);
-  border:1px solid var(--faint);border-radius:8px;
-  padding:9px 12px;font-size:14px;font-family:var(--font-body);
-  outline:none;transition:border-color .15s;
-}
+.field input,.field textarea,.field select{background:var(--surface2);color:var(--text);border:1px solid var(--faint);border-radius:8px;padding:9px 12px;font-size:14px;font-family:var(--font-body);outline:none;transition:border-color .15s}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)}
 .field textarea{min-height:90px;resize:vertical}
 .field input[type=file]{padding:6px;cursor:pointer}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
-.row .field{flex:1;min-width:140px;margin-bottom:0}
-
-/* BUTTONS */
-.btn{
-  border:none;border-radius:8px;padding:9px 16px;
-  font-size:14px;font-weight:600;font-family:var(--font-body);
-  cursor:pointer;transition:opacity .15s,transform .15s;
-  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
-}
+.row .field{flex:1;min-width:130px;margin-bottom:0}
+.btn{border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;font-family:var(--font-body);cursor:pointer;transition:opacity .15s,transform .15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn:hover:not(:disabled){opacity:.85;transform:translateY(-1px)}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .btn-accent{background:var(--accent);color:#0d1117}
@@ -83,36 +57,18 @@ h1,h2,h3{font-family:var(--font-display)}
 .btn-cyan{background:var(--cyan);color:#0d1117}
 .btn-red{background:var(--red);color:#fff}
 .btn-ghost{background:transparent;border:1px solid var(--faint);color:var(--text)}
-
-/* STATUS */
 .status{min-height:20px;font-size:13px;color:var(--muted);margin-top:10px}
 .status.ok{color:var(--green)}
 .status.warn{color:var(--orange)}
 .status.err{color:var(--red)}
-
-/* CHARACTERS */
 .char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:16px}
 .char-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
 .char-top{display:flex;gap:12px;margin-bottom:12px}
-.char-thumb{
-  width:96px;height:96px;border-radius:10px;flex-shrink:0;
-  background:var(--surface3);border:1px solid var(--border);
-  overflow:hidden;display:flex;align-items:center;justify-content:center;
-  color:var(--muted);font-size:11px;text-align:center;
-}
+.char-thumb{width:96px;height:96px;border-radius:10px;flex-shrink:0;background:var(--surface3);border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;text-align:center}
 .char-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .char-info{flex:1;min-width:0}
 .char-info .field{margin-bottom:8px}
-
-/* STORY BOX */
-.story-box{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:10px;padding:14px;
-  white-space:pre-wrap;font-size:14px;line-height:1.7;
-  min-height:60px;color:var(--text);
-}
-
-/* CHAPTERS */
+.story-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;white-space:pre-wrap;font-size:14px;line-height:1.7;min-height:60px;color:var(--text)}
 .chapter-list{display:flex;flex-direction:column;gap:16px}
 .ch-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
 .ch-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px}
@@ -122,23 +78,14 @@ h1,h2,h3{font-family:var(--font-display)}
 .ch-tag{padding:3px 10px;border-radius:999px;background:rgba(88,166,255,0.12);border:1px solid rgba(88,166,255,0.25);font-size:12px;color:var(--accent)}
 .ch-body{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 .ch-text{font-size:14px;line-height:1.7;white-space:pre-wrap}
-.img-preview{
-  width:100%;aspect-ratio:1/1;border-radius:10px;
-  background:var(--surface3);border:1px solid var(--border);
-  overflow:hidden;display:flex;align-items:center;justify-content:center;
-  color:var(--muted);font-size:12px;text-align:center;padding:12px;
-  margin-top:10px;
-}
+.img-preview{width:100%;aspect-ratio:1/1;border-radius:10px;background:var(--surface3);border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:12px;margin-top:10px}
 .img-preview img{width:100%;height:100%;object-fit:cover;display:block}
 .hint{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5}
-
-/* EMPTY */
 .empty{color:var(--muted);font-size:14px;padding:16px 0}
-
-/* SHIMMER */
+/* modello badge */
+.model-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);margin-left:6px}
 @keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
 .loading{animation:shimmer 1.4s ease-in-out infinite}
-
 @media(max-width:900px){
   .grid2{grid-template-columns:1fr}
   .ch-body{grid-template-columns:1fr}
@@ -148,28 +95,37 @@ h1,h2,h3{font-family:var(--font-display)}
 <body>
 <div class="container">
 
-  <!-- HEADER -->
   <div class="header">
     <div class="header-title">
       <span style="font-size:28px">📖</span>
       <h1>AI Storybook Studio</h1>
     </div>
     <div class="header-pills">
-      <span class="pill">Gemini 2.0 Flash</span>
+      <span class="pill" id="pill-gemini-model">Gemini</span>
       <span class="pill">Pollinations.AI</span>
       <span class="pill">No backend needed</span>
     </div>
   </div>
 
-  <!-- SETTINGS + STORY IDEA -->
   <div class="grid2">
-    <!-- Settings -->
-    <div class="card" id="section-settings">
+    <!-- IMPOSTAZIONI -->
+    <div class="card mb20">
       <div class="card-title">⚙️ Impostazioni</div>
       <div class="card-sub">La Gemini API key è salvata solo in memoria (sessione corrente).</div>
       <div class="field">
         <label>Gemini API key</label>
         <input type="password" id="inp-apikey" placeholder="AIza..."/>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Modello Gemini</label>
+          <select id="inp-geminimodel">
+            <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite ⭐ (consigliato)</option>
+            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+            <option value="gemini-1.5-flash-8b">gemini-1.5-flash-8b</option>
+          </select>
+        </div>
       </div>
       <div class="row">
         <div class="field">
@@ -195,8 +151,8 @@ h1,h2,h3{font-family:var(--font-display)}
       <div class="status" id="status-settings"></div>
     </div>
 
-    <!-- Story Idea -->
-    <div class="card" id="section-story">
+    <!-- IDEA STORIA -->
+    <div class="card mb20">
       <div class="card-title">💡 Idea storia</div>
       <div class="card-sub">Compila, raffina la versione breve e poi genera i 10 capitoli.</div>
       <div class="row">
@@ -231,8 +187,8 @@ h1,h2,h3{font-family:var(--font-display)}
     </div>
   </div>
 
-  <!-- CHARACTERS -->
-  <div class="card" style="margin-bottom:20px">
+  <!-- PROTAGONISTI -->
+  <div class="card mb20">
     <div class="card-title">🧑‍🎨 Protagonisti</div>
     <div class="card-sub">Carica le immagini, genera la descrizione con AI, modificala e salvala. Sarà usata nei prompt dei capitoli.</div>
     <button class="btn btn-cyan" id="btn-add-char">+ Aggiungi personaggio</button>
@@ -241,13 +197,13 @@ h1,h2,h3{font-family:var(--font-display)}
     </div>
   </div>
 
-  <!-- SHORT VERSION -->
-  <div class="card" style="margin-bottom:20px">
+  <!-- VERSIONE BREVE -->
+  <div class="card mb20">
     <div class="card-title">📄 Versione breve</div>
     <div class="story-box" id="short-story-box">Nessuna versione breve generata.</div>
   </div>
 
-  <!-- CHAPTERS -->
+  <!-- CAPITOLI -->
   <div class="card">
     <div class="card-title">📖 Capitoli</div>
     <div class="card-sub">Ogni capitolo include solo i personaggi citati in quella scena. Modifica il prompt prima di generare l'immagine.</div>
@@ -257,41 +213,34 @@ h1,h2,h3{font-family:var(--font-display)}
   </div>
 
 </div>
-
 <script>
-// ─── STATE (in-memory, no localStorage) ─────────────────────────────────────
+// ─── MODELLI GEMINI DISPONIBILI (tutti free tier) ─────────────────────────────
+// gemini-2.0-flash-lite  → più veloce, meno quota usata, ideale per testo
+// gemini-2.0-flash       → bilanciato, supporta immagini in input
+// gemini-1.5-flash       → stabile, ampiamente supportato
+// gemini-1.5-flash-8b    → ultra-leggero, fallback estremo
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
 const S = {
   apiKey: '',
+  geminiModel: 'gemini-2.0-flash-lite',
   imgModel: 'flux',
   imgSize: 1024,
   globalSeed: '',
   title: '', audience: '', tone: '', world: '', idea: '',
   shortVersion: '',
-  chapters: [],   // [{number,title,summary,text,characters,imagePrompt,imageUrl,imageSeed}]
-  characters: []  // [{id,name,imageDataUrl,mimeType,description}]
+  chapters: [],
+  characters: []
 };
 
-// ─── UTILS ───────────────────────────────────────────────────────────────────
 let _uid = 0;
-function uid(){ return 'c' + (++_uid) + '_' + Math.random().toString(36).slice(2,7); }
+function uid(){ return 'c'+(++_uid)+'_'+Math.random().toString(36).slice(2,7); }
 
 function setStatus(id, msg, type=''){
-  const el = document.getElementById(id);
+  const el=document.getElementById(id);
   if(!el) return;
-  el.textContent = msg;
-  el.className = 'status' + (type ? ' '+type : '');
-}
-
-function readInputs(){
-  S.apiKey    = document.getElementById('inp-apikey').value.trim();
-  S.imgModel  = document.getElementById('inp-imgmodel').value;
-  S.imgSize   = Number(document.getElementById('inp-imgsize').value) || 1024;
-  S.globalSeed= document.getElementById('inp-seed').value.trim();
-  S.title     = document.getElementById('inp-title').value.trim();
-  S.audience  = document.getElementById('inp-audience').value.trim();
-  S.tone      = document.getElementById('inp-tone').value.trim();
-  S.world     = document.getElementById('inp-world').value.trim();
-  S.idea      = document.getElementById('inp-idea').value.trim();
+  el.textContent=msg;
+  el.className='status'+(type?' '+type:'');
 }
 
 function stripFences(t){
@@ -302,88 +251,110 @@ function stripFences(t){
 // ─── GEMINI API ───────────────────────────────────────────────────────────────
 async function callGemini({ prompt, images=[], temperature=0.7, maxTokens=5000 }){
   if(!S.apiKey) throw new Error('⚠️ Inserisci e salva prima la Gemini API key.');
-  const parts = [];
+  const parts=[];
   for(const img of images){
-    parts.push({ inline_data:{ mime_type: img.mimeType, data: img.base64 } });
+    parts.push({ inline_data:{ mime_type:img.mimeType, data:img.base64 } });
   }
-  parts.push({ text: prompt });
+  parts.push({ text:prompt });
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=${encodeURIComponent(S.apiKey)}`,
-    {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        contents:[{role:'user', parts}],
-        generationConfig:{ temperature, maxOutputTokens: maxTokens }
-      })
-    }
-  );
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(S.geminiModel)}:generateContent?key=${encodeURIComponent(S.apiKey)}`;
+
+  const res = await fetch(endpoint, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      contents:[{role:'user', parts}],
+      generationConfig:{ temperature, maxOutputTokens:maxTokens }
+    })
+  });
+
   if(!res.ok){
-    const txt = await res.text();
-    throw new Error(`Gemini ${res.status}: ${txt.slice(0,300)}`);
+    const txt=await res.text();
+    // messaggio di errore leggibile
+    let msg=`Gemini ${res.status}`;
+    try{
+      const j=JSON.parse(txt);
+      msg+=': '+( j?.error?.message||txt.slice(0,200));
+    }catch{ msg+=': '+txt.slice(0,200); }
+    throw new Error(msg);
   }
-  const data = await res.json();
-  const text = (data?.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();
-  if(!text) throw new Error('Gemini non ha restituito testo.');
+
+  const data=await res.json();
+  const text=(data?.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();
+  if(!text) throw new Error('Gemini non ha restituito testo. Riprova.');
   return text;
 }
 
 // ─── IMAGE UTILS ─────────────────────────────────────────────────────────────
 async function fileToData(file, maxPx=768){
-  const bmp = await createImageBitmap(file);
-  const scale = Math.min(1, maxPx / Math.max(bmp.width, bmp.height));
-  const w = Math.round(bmp.width*scale), h = Math.round(bmp.height*scale);
-  const cv = document.createElement('canvas');
+  const bmp=await createImageBitmap(file);
+  const scale=Math.min(1,maxPx/Math.max(bmp.width,bmp.height));
+  const w=Math.round(bmp.width*scale), h=Math.round(bmp.height*scale);
+  const cv=document.createElement('canvas');
   cv.width=w; cv.height=h;
   cv.getContext('2d').drawImage(bmp,0,0,w,h);
-  const mime = file.type==='image/png'?'image/png':'image/jpeg';
-  const dataUrl = cv.toDataURL(mime, 0.85);
-  const base64 = dataUrl.split(',')[1];
-  return { dataUrl, base64, mimeType: mime };
+  const mime=file.type==='image/png'?'image/png':'image/jpeg';
+  const dataUrl=cv.toDataURL(mime,0.85);
+  return { dataUrl, base64:dataUrl.split(',')[1], mimeType:mime };
 }
 
 function pollinationsUrl(prompt, seed){
-  const s = seed || S.globalSeed || String(Math.floor(Math.random()*9999999));
-  const params = new URLSearchParams({
-    model: S.imgModel||'flux',
-    width: String(S.imgSize||1024),
-    height: String(S.imgSize||1024),
-    seed: String(s),
+  const s=seed||S.globalSeed||String(Math.floor(Math.random()*9999999));
+  const params=new URLSearchParams({
+    model:S.imgModel||'flux',
+    width:String(S.imgSize||1024),
+    height:String(S.imgSize||1024),
+    seed:String(s),
     enhance:'true', safe:'true', nologo:'true'
   });
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params}&_t=${Date.now()}`;
-  return { url, seed: s };
+  return { url:`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params}&_t=${Date.now()}`, seed:s };
 }
 
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
+function readInputs(){
+  S.apiKey       = document.getElementById('inp-apikey').value.trim();
+  S.geminiModel  = document.getElementById('inp-geminimodel').value;
+  S.imgModel     = document.getElementById('inp-imgmodel').value;
+  S.imgSize      = Number(document.getElementById('inp-imgsize').value)||1024;
+  S.globalSeed   = document.getElementById('inp-seed').value.trim();
+  S.title        = document.getElementById('inp-title').value.trim();
+  S.audience     = document.getElementById('inp-audience').value.trim();
+  S.tone         = document.getElementById('inp-tone').value.trim();
+  S.world        = document.getElementById('inp-world').value.trim();
+  S.idea         = document.getElementById('inp-idea').value.trim();
+}
+
 document.getElementById('btn-save-settings').addEventListener('click', ()=>{
   readInputs();
-  setStatus('status-settings','Impostazioni salvate ✓','ok');
+  // aggiorna pill modello nell'header
+  document.getElementById('pill-gemini-model').textContent = S.geminiModel;
+  setStatus('status-settings','Impostazioni salvate ✓ — Modello: '+S.geminiModel,'ok');
 });
 
 // ─── REFINE SHORT ─────────────────────────────────────────────────────────────
 document.getElementById('btn-refine').addEventListener('click', async ()=>{
   readInputs();
   if(!S.idea){ setStatus('status-story','Scrivi prima un\'idea base.','err'); return; }
-  const btn = document.getElementById('btn-refine');
+  const btn=document.getElementById('btn-refine');
   btn.disabled=true;
   setStatus('status-story','Raffinamento in corso...','warn');
   try{
-    const charLines = S.characters.filter(c=>c.name.trim())
-      .map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`)
-      .join('\n') || '- nessun protagonista definito';
+    const charLines=S.characters.filter(c=>c.name.trim())
+      .map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n')
+      ||'- nessun protagonista definito';
 
-    const result = await callGemini({
+    const result=await callGemini({
       prompt:`Rielabora questa idea in una versione breve coinvolgente di 120-180 parole, in italiano.
 Target: ${S.audience||'bambini'} | Tono: ${S.tone||'dolce e avventuroso'} | Ambientazione: ${S.world||'libera'} | Titolo: ${S.title||'senza titolo'}
-Protagonisti:\n${charLines}
-Idea originale:\n${S.idea}
+Protagonisti:
+${charLines}
+Idea originale:
+${S.idea}
 Restituisci SOLO il testo finale, senza titoli o intestazioni.`,
       temperature:0.7, maxTokens:500
     });
-    S.shortVersion = result.trim();
-    document.getElementById('short-story-box').textContent = S.shortVersion;
+    S.shortVersion=result.trim();
+    document.getElementById('short-story-box').textContent=S.shortVersion;
     setStatus('status-story','Versione breve aggiornata ✓','ok');
   }catch(e){ setStatus('status-story',e.message,'err'); }
   finally{ btn.disabled=false; }
@@ -392,51 +363,51 @@ Restituisci SOLO il testo finale, senza titoli o intestazioni.`,
 // ─── GENERATE STORY ───────────────────────────────────────────────────────────
 document.getElementById('btn-genstory').addEventListener('click', async ()=>{
   readInputs();
-  const named = S.characters.filter(c=>c.name.trim());
+  const named=S.characters.filter(c=>c.name.trim());
   if(!named.length){ setStatus('status-story','Aggiungi almeno un personaggio con nome.','err'); return; }
-
-  const btn = document.getElementById('btn-genstory');
+  const btn=document.getElementById('btn-genstory');
   btn.disabled=true;
   setStatus('status-story','Generazione storia in corso (20-40s)...','warn');
   try{
-    const charLines = named.map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n');
-    const base = S.shortVersion||S.idea||'storia per bambini';
+    const charLines=named.map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n');
+    const base=S.shortVersion||S.idea||'storia per bambini';
 
-    const raw = await callGemini({
+    const raw=await callGemini({
       prompt:`Crea una storia illustrata in italiano per ${S.audience||'bambini'} divisa in ESATTAMENTE 10 capitoli.
 Idea base: ${base}
 Titolo: ${S.title||'senza titolo'} | Tono: ${S.tone||'dolce'} | Ambientazione: ${S.world||'libera'}
-Protagonisti disponibili:\n${charLines}
+Protagonisti disponibili:
+${charLines}
 
-REGOLE IMPORTANTI:
-1. Restituisci SOLO JSON valido, senza markdown, senza testo aggiuntivo.
-2. L'array "chapters" deve avere ESATTAMENTE 10 elementi.
-3. Campo "characters": inserisci SOLO i nomi dei personaggi EFFETTIVAMENTE PRESENTI in quel capitolo. Se un personaggio non appare, NON includerlo.
-4. Usa SOLO nomi presenti nella lista protagonisti.
-5. "text": 150-220 parole per capitolo, ben scritto.
+REGOLE:
+1. Restituisci SOLO JSON valido, senza markdown, senza testo aggiuntivo prima o dopo.
+2. "chapters" deve avere ESATTAMENTE 10 elementi.
+3. "characters": SOLO i nomi dei personaggi EFFETTIVAMENTE presenti in quel capitolo.
+4. Usa SOLO nomi dalla lista protagonisti sopra.
+5. "text": 150-220 parole per capitolo, ben scritto e scorrevole.
 6. "summary": 1-2 frasi.
-7. Continuità narrativa tra i capitoli. Finale soddisfacente.
+7. Continuità narrativa. Finale soddisfacente.
 
-Formato JSON richiesto (restituisci SOLO questo):
-{"shortVersion":"stringa","chapters":[{"number":1,"title":"stringa","summary":"stringa","text":"stringa","characters":["Nome1","Nome2"]}]}`,
+JSON da restituire (SOLO questo, nient'altro):
+{"shortVersion":"...","chapters":[{"number":1,"title":"...","summary":"...","text":"...","characters":["Nome1"]}]}`,
       temperature:0.75, maxTokens:6000
     });
 
-    const parsed = JSON.parse(stripFences(raw));
+    const parsed=JSON.parse(stripFences(raw));
     if(!Array.isArray(parsed.chapters)||parsed.chapters.length!==10)
       throw new Error('La risposta non contiene esattamente 10 capitoli. Riprova.');
 
-    S.shortVersion = parsed.shortVersion || S.shortVersion;
-    S.chapters = parsed.chapters.map((ch,i)=>({
-      number: Number(ch.number||i+1),
-      title: ch.title||`Capitolo ${i+1}`,
-      summary: ch.summary||'',
-      text: ch.text||'',
-      characters: Array.isArray(ch.characters)?ch.characters:[],
+    S.shortVersion=parsed.shortVersion||S.shortVersion;
+    S.chapters=parsed.chapters.map((ch,i)=>({
+      number:Number(ch.number||i+1),
+      title:ch.title||`Capitolo ${i+1}`,
+      summary:ch.summary||'',
+      text:ch.text||'',
+      characters:Array.isArray(ch.characters)?ch.characters:[],
       imagePrompt:'', imageUrl:'', imageSeed:''
     }));
 
-    document.getElementById('short-story-box').textContent = S.shortVersion||'';
+    document.getElementById('short-story-box').textContent=S.shortVersion||'';
     renderChapters();
     setStatus('status-story',`Storia generata! ${S.chapters.length} capitoli pronti ✓`,'ok');
   }catch(e){ setStatus('status-story',e.message,'err'); }
@@ -450,42 +421,33 @@ document.getElementById('btn-add-char').addEventListener('click', ()=>{
 });
 
 function renderCharacters(){
-  const grid = document.getElementById('char-grid');
+  const grid=document.getElementById('char-grid');
   grid.innerHTML='';
   if(!S.characters.length){
     grid.innerHTML='<div class="empty">Nessun personaggio aggiunto.</div>';
     return;
   }
-  S.characters.forEach(char => grid.appendChild(buildCharCard(char)));
+  S.characters.forEach(char=>grid.appendChild(buildCharCard(char)));
 }
 
 function buildCharCard(char){
-  const card = document.createElement('div');
-  card.className='char-card';
+  const card=document.createElement('div'); card.className='char-card';
 
-  // thumb
-  const top = document.createElement('div');
-  top.className='char-top';
-  const thumb = document.createElement('div');
-  thumb.className='char-thumb';
-  thumb.id='thumb_'+char.id;
+  const top=document.createElement('div'); top.className='char-top';
+  const thumb=document.createElement('div'); thumb.className='char-thumb'; thumb.id='thumb_'+char.id;
   if(char.imageDataUrl){
-    const img=document.createElement('img'); img.src=char.imageDataUrl; img.alt=char.name||'personaggio';
+    const img=document.createElement('img'); img.src=char.imageDataUrl; img.alt=char.name||'';
     thumb.appendChild(img);
   } else { thumb.textContent='Nessuna\nimmagine'; }
 
-  // right side
-  const info = document.createElement('div');
-  info.className='char-info';
+  const info=document.createElement('div'); info.className='char-info';
 
-  // name
   const fName=document.createElement('div'); fName.className='field';
   const lName=document.createElement('label'); lName.textContent='Nome';
   const iName=document.createElement('input'); iName.type='text'; iName.value=char.name; iName.placeholder='Es. Leo il coniglietto';
-  iName.addEventListener('input', e=>{ char.name=e.target.value; });
+  iName.addEventListener('input',e=>{ char.name=e.target.value; });
   fName.append(lName,iName);
 
-  // file
   const fFile=document.createElement('div'); fFile.className='field';
   const lFile=document.createElement('label'); lFile.textContent='Immagine';
   const iFile=document.createElement('input'); iFile.type='file'; iFile.accept='image/png,image/jpeg,image/webp';
@@ -496,35 +458,38 @@ function buildCharCard(char){
       char.imageDataUrl=d.dataUrl; char.mimeType=d.mimeType;
       const t=document.getElementById('thumb_'+char.id);
       if(t){ t.innerHTML=''; const img=document.createElement('img'); img.src=d.dataUrl; t.appendChild(img); }
-    }catch(err){ alert('Errore caricamento immagine: '+err.message); }
+    }catch(err){ alert('Errore immagine: '+err.message); }
   });
   fFile.append(lFile,iFile);
   info.append(fName,fFile);
   top.append(thumb,info);
 
-  // description
   const fDesc=document.createElement('div'); fDesc.className='field';
-  const lDesc=document.createElement('label'); lDesc.textContent='Descrizione (usata nei prompt)';
+  const lDesc=document.createElement('label'); lDesc.textContent='Descrizione (usata nei prompt immagine)';
   const taDesc=document.createElement('textarea');
-  taDesc.id='desc_'+char.id; taDesc.value=char.description||''; taDesc.placeholder='Genera o scrivi la descrizione del personaggio...';
-  taDesc.addEventListener('input', e=>{ char.description=e.target.value; });
+  taDesc.id='desc_'+char.id; taDesc.value=char.description||''; taDesc.placeholder='Genera o scrivi la descrizione...';
+  taDesc.addEventListener('input',e=>{ char.description=e.target.value; });
   fDesc.append(lDesc,taDesc);
 
-  // buttons
   const btnRow=document.createElement('div'); btnRow.className='row'; btnRow.style.marginTop='8px';
 
   const btnAnalyze=document.createElement('button'); btnAnalyze.className='btn btn-cyan'; btnAnalyze.textContent='🔍 Genera descrizione da immagine';
   btnAnalyze.addEventListener('click', async ()=>{
     if(!char.imageDataUrl){ alert('Carica prima un\'immagine.'); return; }
+    // l'analisi immagine richiede un modello che supporti vision — forziamo 2.0-flash
+    const modelBackup=S.geminiModel;
+    if(S.geminiModel==='gemini-2.0-flash-lite'||S.geminiModel==='gemini-1.5-flash-8b'){
+      S.geminiModel='gemini-2.0-flash';
+    }
     btnAnalyze.disabled=true; btnAnalyze.textContent='⏳ Analisi...';
     try{
       const [,b64]=char.imageDataUrl.split(',');
       const mMatch=char.imageDataUrl.match(/data:(.*?);base64/);
       const result=await callGemini({
-        prompt:`Analizza questa immagine di un personaggio e scrivi una descrizione visuale dettagliata e stabile in italiano, utile per generare illustrazioni coerenti in stile cartoon da libro illustrato per bambini.
-Includi: età apparente, corporatura, capelli (colore, lunghezza, stile), occhi (colore, forma), tratti del viso distintivi, abbigliamento (colori, stile, dettagli), accessori, espressione e umore di base, palette colori generale.
+        prompt:`Analizza questa immagine e scrivi una descrizione visuale dettagliata in italiano, utile per generare illustrazioni coerenti in stile cartoon da libro per bambini.
+Includi: età apparente, corporatura, capelli (colore, lunghezza, stile), occhi, tratti distintivi, abbigliamento, accessori, espressione di base, palette colori.
 NON descrivere lo sfondo.
-${char.name?'Nome personaggio: '+char.name:''}
+${char.name?'Nome: '+char.name:''}
 Chiudi con: "Resa visiva: cartoon children book illustration, linee morbide, colori vivaci e coerenti."
 Restituisci SOLO il testo della descrizione.`,
         images:[{ base64:b64, mimeType:mMatch?mMatch[1]:'image/jpeg' }],
@@ -534,7 +499,10 @@ Restituisci SOLO il testo della descrizione.`,
       const ta=document.getElementById('desc_'+char.id);
       if(ta) ta.value=char.description;
     }catch(e){ alert(e.message); }
-    finally{ btnAnalyze.disabled=false; btnAnalyze.textContent='🔍 Genera descrizione da immagine'; }
+    finally{
+      S.geminiModel=modelBackup;
+      btnAnalyze.disabled=false; btnAnalyze.textContent='🔍 Genera descrizione da immagine';
+    }
   });
 
   const btnSave=document.createElement('button'); btnSave.className='btn btn-accent'; btnSave.textContent='💾 Salva';
@@ -542,14 +510,13 @@ Restituisci SOLO il testo della descrizione.`,
     const ta=document.getElementById('desc_'+char.id);
     if(ta) char.description=ta.value;
     btnSave.textContent='✓ Salvato!';
-    setTimeout(()=>btnSave.textContent='💾 Salva',1500);
-    // aggiorna capitoli già renderizzati
+    setTimeout(()=>{ btnSave.textContent='💾 Salva'; },1500);
     refreshChapterTags();
   });
 
   const btnDel=document.createElement('button'); btnDel.className='btn btn-red'; btnDel.textContent='🗑';
   btnDel.addEventListener('click', ()=>{
-    if(!confirm('Rimuovere '+( char.name||'questo personaggio')+'?')) return;
+    if(!confirm('Rimuovere '+(char.name||'questo personaggio')+'?')) return;
     S.characters=S.characters.filter(c=>c.id!==char.id);
     renderCharacters();
     renderChapters();
@@ -568,79 +535,66 @@ function renderChapters(){
     list.innerHTML='<div class="empty">Nessun capitolo generato.</div>';
     return;
   }
-  S.chapters.forEach((ch,idx) => list.appendChild(buildChapterCard(ch,idx)));
+  S.chapters.forEach((ch,idx)=>list.appendChild(buildChapterCard(ch,idx)));
 }
 
 function refreshChapterTags(){
-  // piccolo refresh solo dei tag (nomi personaggi) nei capitoli esistenti
   S.chapters.forEach((ch,idx)=>{
-    const tagEl=document.getElementById('chtags_'+idx);
-    if(!tagEl) return;
-    tagEl.innerHTML='';
+    const el=document.getElementById('chtags_'+idx);
+    if(!el) return;
+    el.innerHTML='';
     const names=ch.characters.length?ch.characters:['Nessun personaggio'];
-    names.forEach(n=>{ const s=document.createElement('span'); s.className='ch-tag'; s.textContent=n; tagEl.appendChild(s); });
+    names.forEach(n=>{ const s=document.createElement('span'); s.className='ch-tag'; s.textContent=n; el.appendChild(s); });
   });
 }
 
-function buildChapterCard(ch, idx){
+function buildChapterCard(ch,idx){
   const card=document.createElement('div'); card.className='ch-card';
 
-  // HEAD
   const head=document.createElement('div'); head.className='ch-head';
   const titleDiv=document.createElement('div');
   const h3=document.createElement('h3'); h3.textContent=`Capitolo ${ch.number} · ${ch.title}`;
   const sumDiv=document.createElement('div'); sumDiv.className='ch-summary'; sumDiv.textContent=ch.summary||'';
   titleDiv.append(h3,sumDiv);
-
   const tags=document.createElement('div'); tags.className='ch-tags'; tags.id='chtags_'+idx;
-  const names=ch.characters.length?ch.characters:['Nessun personaggio'];
-  names.forEach(n=>{ const s=document.createElement('span'); s.className='ch-tag'; s.textContent=n; tags.appendChild(s); });
-
+  (ch.characters.length?ch.characters:['Nessun personaggio']).forEach(n=>{
+    const s=document.createElement('span'); s.className='ch-tag'; s.textContent=n; tags.appendChild(s);
+  });
   head.append(titleDiv,tags);
 
-  // BODY
   const body=document.createElement('div'); body.className='ch-body';
-
-  // LEFT: testo
   const left=document.createElement('div');
   const storyBox=document.createElement('div'); storyBox.className='story-box ch-text'; storyBox.textContent=ch.text||'';
   left.appendChild(storyBox);
 
-  // RIGHT: prompt + immagine
   const right=document.createElement('div');
-
   const fPrompt=document.createElement('div'); fPrompt.className='field';
   const lPrompt=document.createElement('label'); lPrompt.textContent='Prompt immagine (modificabile)';
   const taPrompt=document.createElement('textarea'); taPrompt.value=ch.imagePrompt||''; taPrompt.placeholder='Genera o scrivi il prompt...';
-  taPrompt.addEventListener('input', e=>{ ch.imagePrompt=e.target.value; });
+  taPrompt.addEventListener('input',e=>{ ch.imagePrompt=e.target.value; });
   fPrompt.append(lPrompt,taPrompt);
 
   const btnRow2=document.createElement('div'); btnRow2.className='row'; btnRow2.style.marginTop='8px';
 
-  // btn genera prompt
   const btnGP=document.createElement('button'); btnGP.className='btn btn-cyan'; btnGP.textContent='✨ Genera prompt';
   btnGP.addEventListener('click', async ()=>{
     btnGP.disabled=true; btnGP.textContent='⏳ ...';
-    try{
-      await generateChapterPrompt(idx);
-      taPrompt.value=ch.imagePrompt;
-    }catch(e){ alert(e.message); }
+    try{ await generateChapterPrompt(idx); taPrompt.value=ch.imagePrompt; }
+    catch(e){ alert(e.message); }
     finally{ btnGP.disabled=false; btnGP.textContent='✨ Genera prompt'; }
   });
 
-  // btn salva prompt
   const btnSP=document.createElement('button'); btnSP.className='btn btn-accent'; btnSP.textContent='💾 Salva prompt';
   btnSP.addEventListener('click', ()=>{
     ch.imagePrompt=taPrompt.value;
     btnSP.textContent='✓ Salvato!';
-    setTimeout(()=>btnSP.textContent='💾 Salva prompt',1500);
+    setTimeout(()=>{ btnSP.textContent='💾 Salva prompt'; },1500);
   });
 
-  // btn genera immagine
   const btnGI=document.createElement('button'); btnGI.className='btn btn-green'; btnGI.textContent='🎨 Genera immagine';
   btnGI.addEventListener('click', async ()=>{
     btnGI.disabled=true; btnGI.textContent='⏳ Generazione...';
-    try{ await generateChapterImage(idx, preview); }
+    try{ await generateChapterImage(idx,preview); }
     catch(e){ alert(e.message); }
     finally{ btnGI.disabled=false; btnGI.textContent='🎨 Genera immagine'; }
   });
@@ -649,7 +603,7 @@ function buildChapterCard(ch, idx){
 
   const preview=document.createElement('div'); preview.className='img-preview'; preview.id='prev_'+idx;
   if(ch.imageUrl){
-    const img=document.createElement('img'); img.src=ch.imageUrl; img.alt='Immagine cap. '+ch.number;
+    const img=document.createElement('img'); img.src=ch.imageUrl; img.alt='Cap. '+ch.number;
     preview.appendChild(img);
   } else { preview.textContent='Nessuna immagine generata.'; }
 
@@ -662,49 +616,34 @@ function buildChapterCard(ch, idx){
   return card;
 }
 
-// ─── GENERATE CHAPTER PROMPT ─────────────────────────────────────────────────
 async function generateChapterPrompt(idx){
   const ch=S.chapters[idx];
-  const relevantChars=S.characters.filter(c=>ch.characters.includes(c.name));
-  const charBlock=relevantChars.length
-    ? relevantChars.map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n')
-    : '(no specific character in this chapter — create an atmospheric scene)';
-
-  ch.imagePrompt = await callGemini({
-    prompt:`You are an expert at writing image prompts for children's book illustrations.
-Write ONE image generation prompt in English for this story chapter.
-
-Chapter title: ${ch.title}
-Chapter summary: ${ch.summary}
-Chapter text: ${ch.text}
-
-Characters present in this chapter:
+  const rel=S.characters.filter(c=>ch.characters.includes(c.name));
+  const charBlock=rel.length
+    ? rel.map(c=>`- ${c.name}: ${c.description||'no description'}`).join('\n')
+    : '(no specific character — create an atmospheric scene)';
+  ch.imagePrompt=await callGemini({
+    prompt:`Write ONE image generation prompt in English for this children's book chapter illustration.
+Chapter: ${ch.title}
+Summary: ${ch.summary}
+Text: ${ch.text}
+Characters in this chapter:
 ${charBlock}
-
-STRICT RULES:
-- Include ONLY the characters listed above.
-- Style: cartoon children book illustration, soft lines, vibrant colors, warm lighting.
-- NO text, NO letters, NO words, NO captions, NO watermarks anywhere in the image.
-- Describe: character poses, expressions, environment, lighting, framing, mood.
-- Output ONLY the final prompt text. No introduction, no explanation.`,
+RULES: cartoon children book illustration, soft lines, vibrant colors, warm lighting. NO text, NO letters, NO watermarks. Describe poses, expressions, environment, mood. Output ONLY the final prompt.`,
     temperature:0.65, maxTokens:400
   });
 }
 
-// ─── GENERATE CHAPTER IMAGE ───────────────────────────────────────────────────
-async function generateChapterImage(idx, previewEl){
+async function generateChapterImage(idx,previewEl){
   const ch=S.chapters[idx];
   if(!ch.imagePrompt.trim()) await generateChapterPrompt(idx);
-
-  const { url, seed }=pollinationsUrl(ch.imagePrompt, ch.imageSeed);
+  const {url,seed}=pollinationsUrl(ch.imagePrompt,ch.imageSeed);
   ch.imageSeed=seed; ch.imageUrl=url;
-
   const pEl=previewEl||document.getElementById('prev_'+idx);
   if(pEl){
     pEl.innerHTML='';
     const img=document.createElement('img');
-    img.src=ch.imageUrl; img.alt='Immagine cap. '+ch.number;
-    img.className='loading';
+    img.src=ch.imageUrl; img.alt='Cap. '+ch.number; img.className='loading';
     img.onload=()=>img.classList.remove('loading');
     img.onerror=()=>{ img.style.display='none'; pEl.textContent='Errore caricamento immagine.'; };
     pEl.appendChild(img);
