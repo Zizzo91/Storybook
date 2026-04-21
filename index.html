@@ -37,7 +37,7 @@ h1,h2,h3{font-family:var(--font-display)}
 .header-pills{display:flex;gap:8px;flex-wrap:wrap}
 .pill{padding:4px 10px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid var(--border);font-size:12px;color:var(--muted)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
 .card-title{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
 .card-sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
 .mb20{margin-bottom:20px}
@@ -123,8 +123,8 @@ h1,h2,h3{font-family:var(--font-display)}
         <div class="field">
           <label>Modello vision</label>
           <select id="inp-visionmodel">
-            <option value="meta-llama/llama-4-scout-17b-16e-instruct">meta-llama/llama-4-scout-17b-16e-instruct</option>
-            <option value="meta-llama/llama-4-maverick-17b-128e-instruct">meta-llama/llama-4-maverick-17b-128e-instruct</option>
+            <option value="meta-llama/llama-4-scout-17b-16e-instruct">llama-4-scout</option>
+            <option value="meta-llama/llama-4-maverick-17b-128e-instruct">llama-4-maverick</option>
           </select>
         </div>
       </div>
@@ -154,7 +154,7 @@ h1,h2,h3{font-family:var(--font-display)}
 
     <div class="card mb20">
       <div class="card-title">💡 Idea storia</div>
-      <div class="card-sub">Compila, raffina la versione breve e poi genera i 10 capitoli.</div>
+      <div class="card-sub">Compila, raffina la versione breve e poi genera i 10 capitoli in 2 chiamate consecutive.</div>
       <div class="row">
         <div class="field">
           <label>Titolo / tema</label>
@@ -209,7 +209,6 @@ h1,h2,h3{font-family:var(--font-display)}
 <script>
 const S = {
   apiKey: '',
-  provider: 'groq',
   textModel: 'llama-3.3-70b-versatile',
   visionModel: 'meta-llama/llama-4-scout-17b-16e-instruct',
   imgModel: 'flux',
@@ -224,7 +223,33 @@ const S = {
 let _uid = 0;
 function uid(){ return 'c'+(++_uid)+'_'+Math.random().toString(36).slice(2,7); }
 function setStatus(id,msg,type=''){ const el=document.getElementById(id); if(!el) return; el.textContent=msg; el.className='status'+(type?' '+type:''); }
-function stripFences(t){ return t.trim().replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim(); }
+
+function stripFences(t){
+  return t.trim()
+    .replace(/^```json\s*/i,'')
+    .replace(/^```\s*/i,'')
+    .replace(/\s*```$/,'')
+    .trim();
+}
+
+// Estrae il primo JSON array o oggetto valido dalla risposta,
+// gestendo il caso in cui il modello aggiunga testo prima/dopo
+function extractJson(raw){
+  const cleaned = stripFences(raw);
+  // prova parse diretto
+  try { return JSON.parse(cleaned); } catch {}
+  // cerca il primo { o [ e l'ultimo } o ]
+  const first = Math.min(
+    cleaned.indexOf('{') === -1 ? Infinity : cleaned.indexOf('{'),
+    cleaned.indexOf('[') === -1 ? Infinity : cleaned.indexOf('[')
+  );
+  if(first === Infinity) throw new Error('Nessun JSON trovato nella risposta.');
+  const opener = cleaned[first];
+  const closer = opener === '{' ? '}' : ']';
+  const last = cleaned.lastIndexOf(closer);
+  if(last === -1) throw new Error('JSON incompleto nella risposta.');
+  return JSON.parse(cleaned.slice(first, last + 1));
+}
 
 function readInputs(){
   S.apiKey=document.getElementById('inp-apikey').value.trim();
@@ -240,14 +265,11 @@ function readInputs(){
   S.idea=document.getElementById('inp-idea').value.trim();
 }
 
-async function callGroqText({ prompt, temperature=0.7, maxTokens=2500 }){
+async function callGroqText({ prompt, temperature=0.7, maxTokens=3500 }){
   if(!S.apiKey) throw new Error('⚠️ Inserisci e salva prima la Groq API key.');
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':`Bearer ${S.apiKey}`
-    },
+    headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${S.apiKey}` },
     body: JSON.stringify({
       model: S.textModel,
       messages: [{ role:'user', content: prompt }],
@@ -258,10 +280,8 @@ async function callGroqText({ prompt, temperature=0.7, maxTokens=2500 }){
   const txt = await res.text();
   if(!res.ok){
     let msg = `Groq ${res.status}`;
-    try{
-      const j = JSON.parse(txt);
-      msg += ': ' + (j?.error?.message || txt.slice(0,300));
-    } catch { msg += ': ' + txt.slice(0,300); }
+    try{ const j=JSON.parse(txt); msg+=': '+(j?.error?.message||txt.slice(0,300)); }
+    catch{ msg+=': '+txt.slice(0,300); }
     throw new Error(msg);
   }
   const data = JSON.parse(txt);
@@ -274,10 +294,7 @@ async function callGroqVision({ prompt, imageDataUrl, maxTokens=1200, temperatur
   if(!S.apiKey) throw new Error('⚠️ Inserisci e salva prima la Groq API key.');
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':`Bearer ${S.apiKey}`
-    },
+    headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${S.apiKey}` },
     body: JSON.stringify({
       model: S.visionModel,
       messages: [{
@@ -294,10 +311,8 @@ async function callGroqVision({ prompt, imageDataUrl, maxTokens=1200, temperatur
   const txt = await res.text();
   if(!res.ok){
     let msg = `Groq vision ${res.status}`;
-    try{
-      const j = JSON.parse(txt);
-      msg += ': ' + (j?.error?.message || txt.slice(0,300));
-    } catch { msg += ': ' + txt.slice(0,300); }
+    try{ const j=JSON.parse(txt); msg+=': '+(j?.error?.message||txt.slice(0,300)); }
+    catch{ msg+=': '+txt.slice(0,300); }
     throw new Error(msg);
   }
   const data = JSON.parse(txt);
@@ -330,6 +345,7 @@ function pollinationsUrl(prompt, seed){
   return { url:`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params}&_t=${Date.now()}`, seed:s };
 }
 
+// ─── SETTINGS ────────────────────────────────────────────────────────────────
 document.getElementById('btn-save-settings').addEventListener('click', ()=>{
   readInputs();
   document.getElementById('pill-provider').textContent='Groq';
@@ -337,6 +353,7 @@ document.getElementById('btn-save-settings').addEventListener('click', ()=>{
   setStatus('status-settings',`Impostazioni salvate ✓ — ${S.textModel}`,'ok');
 });
 
+// ─── RAFFINA IDEA ────────────────────────────────────────────────────────────
 document.getElementById('btn-refine').addEventListener('click', async ()=>{
   readInputs();
   if(!S.idea){ setStatus('status-story','Scrivi prima un\'idea base.','err'); return; }
@@ -344,11 +361,12 @@ document.getElementById('btn-refine').addEventListener('click', async ()=>{
   btn.disabled=true;
   setStatus('status-story','Raffinamento in corso...','warn');
   try{
-    const charLines=S.characters.filter(c=>c.name.trim()).map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n')||'- nessun protagonista definito';
+    const charLines=S.characters.filter(c=>c.name.trim())
+      .map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n')
+      ||'- nessun protagonista definito';
     const result=await callGroqText({
       prompt:`Rielabora questa idea in una versione breve coinvolgente di 120-180 parole, in italiano.\nTarget: ${S.audience||'bambini'} | Tono: ${S.tone||'dolce e avventuroso'} | Ambientazione: ${S.world||'libera'} | Titolo: ${S.title||'senza titolo'}\nProtagonisti:\n${charLines}\nIdea originale:\n${S.idea}\nRestituisci SOLO il testo finale, senza titoli o intestazioni.`,
-      temperature:0.7,
-      maxTokens:700
+      temperature:0.7, maxTokens:700
     });
     S.shortVersion=result.trim();
     document.getElementById('short-story-box').textContent=S.shortVersion;
@@ -357,25 +375,73 @@ document.getElementById('btn-refine').addEventListener('click', async ()=>{
   finally{ btn.disabled=false; }
 });
 
+// ─── GENERA STORIA (2 chiamate) ───────────────────────────────────────────────
 document.getElementById('btn-genstory').addEventListener('click', async ()=>{
   readInputs();
   const named=S.characters.filter(c=>c.name.trim());
   if(!named.length){ setStatus('status-story','Aggiungi almeno un personaggio con nome.','err'); return; }
   const btn=document.getElementById('btn-genstory');
   btn.disabled=true;
-  setStatus('status-story','Generazione storia in corso...','warn');
+
   try{
     const charLines=named.map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n');
     const base=S.shortVersion||S.idea||'storia per bambini';
-    const raw=await callGroqText({
-      prompt:`Crea una storia illustrata in italiano per ${S.audience||'bambini'} divisa in ESATTAMENTE 10 capitoli.\nIdea base: ${base}\nTitolo: ${S.title||'senza titolo'} | Tono: ${S.tone||'dolce'} | Ambientazione: ${S.world||'libera'}\nProtagonisti disponibili:\n${charLines}\n\nREGOLE:\n1. Restituisci SOLO JSON valido, senza markdown, senza testo aggiuntivo.\n2. "chapters" deve avere ESATTAMENTE 10 elementi.\n3. "characters": SOLO i nomi dei personaggi EFFETTIVAMENTE presenti in quel capitolo.\n4. Usa SOLO nomi dalla lista protagonisti sopra.\n5. "text": 150-220 parole per capitolo.\n6. "summary": 1-2 frasi.\n7. Continuità narrativa. Finale soddisfacente.\n\nJSON da restituire:\n{"shortVersion":"...","chapters":[{"number":1,"title":"...","summary":"...","text":"...","characters":["Nome1"]}]}`,
-      temperature:0.75,
-      maxTokens:7000
+    const ctx=`Titolo: ${S.title||'senza titolo'} | Tono: ${S.tone||'dolce'} | Ambientazione: ${S.world||'libera'} | Target: ${S.audience||'bambini'}`;
+    const charCtx=`Protagonisti disponibili:\n${charLines}`;
+    const rules=`REGOLE IMPORTANTI:
+- Restituisci SOLO un array JSON valido, senza markdown, senza testo prima o dopo.
+- Ogni elemento: {"number":N,"title":"...","summary":"...","text":"...","characters":["Nome1"]}
+- "text": 150-200 parole, ben scritto e scorrevole in italiano.
+- "summary": 1-2 frasi.
+- "characters": SOLO i nomi dei personaggi presenti in quel capitolo, dalla lista protagonisti.`;
+
+    // ── PRIMA METÀ: capitoli 1-5 ──
+    setStatus('status-story','Generazione prima metà (cap. 1-5)...','warn');
+    const raw1=await callGroqText({
+      prompt:`Stai scrivendo i PRIMI 5 CAPITOLI (da 1 a 5) di una storia illustrata.
+Idea base: ${base}
+${ctx}
+${charCtx}
+
+${rules}
+
+La storia deve avere continuità: i capitoli 1-5 introducono i personaggi, il problema e l'avventura inizia.
+Restituisci SOLO un array JSON con esattamente 5 oggetti (capitoli 1-5).`,
+      temperature:0.75, maxTokens:3500
     });
-    const parsed=JSON.parse(stripFences(raw));
-    if(!Array.isArray(parsed.chapters)||parsed.chapters.length!==10) throw new Error('La risposta non contiene esattamente 10 capitoli.');
-    S.shortVersion=parsed.shortVersion||S.shortVersion;
-    S.chapters=parsed.chapters.map((ch,i)=>({
+
+    const half1=extractJson(raw1);
+    if(!Array.isArray(half1)||half1.length!==5)
+      throw new Error(`La prima metà non contiene esattamente 5 capitoli (ricevuti: ${Array.isArray(half1)?half1.length:'non array'}). Riprova.`);
+
+    // Costruisco un riassunto della prima metà da passare alla seconda chiamata
+    const firstHalfSummary=half1.map(ch=>`Cap.${ch.number} "${ch.title}": ${ch.summary||ch.text?.slice(0,120)||''}`).join('\n');
+
+    // ── SECONDA METÀ: capitoli 6-10 ──
+    setStatus('status-story','Generazione seconda metà (cap. 6-10)...','warn');
+    const raw2=await callGroqText({
+      prompt:`Stai scrivendo gli ULTIMI 5 CAPITOLI (da 6 a 10) di una storia illustrata.
+Idea base: ${base}
+${ctx}
+${charCtx}
+
+COSA È GIÀ SUCCESSO nei capitoli 1-5 (mantieni la continuità narrativa):
+${firstHalfSummary}
+
+${rules}
+
+I capitoli 6-10 devono: sviluppare la tensione, avvicinarsi al climax e concludere la storia con un finale soddisfacente.
+Restituisci SOLO un array JSON con esattamente 5 oggetti (capitoli 6-10, con "number" da 6 a 10).`,
+      temperature:0.75, maxTokens:3500
+    });
+
+    const half2=extractJson(raw2);
+    if(!Array.isArray(half2)||half2.length!==5)
+      throw new Error(`La seconda metà non contiene esattamente 5 capitoli (ricevuti: ${Array.isArray(half2)?half2.length:'non array'}). Riprova.`);
+
+    // ── UNISCO LE DUE METÀ ──
+    const allChapters=[...half1,...half2];
+    S.chapters=allChapters.map((ch,i)=>({
       number:Number(ch.number||i+1),
       title:ch.title||`Capitolo ${i+1}`,
       summary:ch.summary||'',
@@ -383,13 +449,14 @@ document.getElementById('btn-genstory').addEventListener('click', async ()=>{
       characters:Array.isArray(ch.characters)?ch.characters:[],
       imagePrompt:'', imageUrl:'', imageSeed:''
     }));
-    document.getElementById('short-story-box').textContent=S.shortVersion||'';
+
     renderChapters();
-    setStatus('status-story',`Storia generata! ${S.chapters.length} capitoli pronti ✓`,'ok');
+    setStatus('status-story',`Storia generata! 10 capitoli pronti ✓`,'ok');
   }catch(e){ setStatus('status-story',e.message,'err'); }
   finally{ btn.disabled=false; }
 });
 
+// ─── CHARACTERS ───────────────────────────────────────────────────────────────
 document.getElementById('btn-add-char').addEventListener('click', ()=>{
   S.characters.push({ id:uid(), name:'', imageDataUrl:'', mimeType:'', description:'' });
   renderCharacters();
@@ -439,6 +506,7 @@ function buildCharCard(char){
   fDesc.append(lDesc,taDesc);
 
   const btnRow=document.createElement('div'); btnRow.className='row'; btnRow.style.marginTop='8px';
+
   const btnAnalyze=document.createElement('button'); btnAnalyze.className='btn btn-cyan'; btnAnalyze.textContent='🔍 Genera descrizione da immagine';
   btnAnalyze.addEventListener('click', async ()=>{
     if(!char.imageDataUrl){ alert('Carica prima un\'immagine.'); return; }
@@ -447,8 +515,7 @@ function buildCharCard(char){
       const result=await callGroqVision({
         prompt:`Analizza questa immagine e scrivi una descrizione visuale dettagliata in italiano, utile per generare illustrazioni coerenti in stile cartoon da libro per bambini. Includi: età apparente, corporatura, capelli, occhi, tratti distintivi, abbigliamento, accessori, espressione di base, palette colori. NON descrivere lo sfondo. ${char.name?'Nome: '+char.name:''} Chiudi con: "Resa visiva: cartoon children book illustration, linee morbide, colori vivaci e coerenti." Restituisci SOLO il testo della descrizione.`,
         imageDataUrl: char.imageDataUrl,
-        maxTokens: 900,
-        temperature: 0.4
+        maxTokens: 900, temperature: 0.4
       });
       char.description=result.trim();
       const ta=document.getElementById('desc_'+char.id);
@@ -478,6 +545,7 @@ function buildCharCard(char){
   return card;
 }
 
+// ─── CHAPTERS ─────────────────────────────────────────────────────────────────
 function renderChapters(){
   const list=document.getElementById('chapter-list');
   list.innerHTML='';
@@ -520,6 +588,7 @@ function buildChapterCard(ch,idx){
   fPrompt.append(lPrompt,taPrompt);
 
   const btnRow2=document.createElement('div'); btnRow2.className='row'; btnRow2.style.marginTop='8px';
+
   const btnGP=document.createElement('button'); btnGP.className='btn btn-cyan'; btnGP.textContent='✨ Genera prompt';
   btnGP.addEventListener('click', async ()=>{
     btnGP.disabled=true; btnGP.textContent='⏳ ...';
@@ -559,11 +628,12 @@ function buildChapterCard(ch,idx){
 async function generateChapterPrompt(idx){
   const ch=S.chapters[idx];
   const rel=S.characters.filter(c=>ch.characters.includes(c.name));
-  const charBlock=rel.length ? rel.map(c=>`- ${c.name}: ${c.description||'no description'}`).join('\n') : '(no specific character — create an atmospheric scene)';
+  const charBlock=rel.length
+    ? rel.map(c=>`- ${c.name}: ${c.description||'no description'}`).join('\n')
+    : '(no specific character — create an atmospheric scene)';
   ch.imagePrompt=await callGroqText({
-    prompt:`Write ONE image generation prompt in English for this children's book chapter illustration.\nChapter: ${ch.title}\nSummary: ${ch.summary}\nText: ${ch.text}\nCharacters in this chapter:\n${charBlock}\nRULES: include ONLY the characters listed above. cartoon children book illustration, soft lines, vibrant colors, warm lighting. NO text, NO letters, NO watermarks. Describe poses, expressions, environment, mood. Output ONLY the final prompt.`,
-    temperature:0.65,
-    maxTokens:500
+    prompt:`Write ONE image generation prompt in English for this children's book chapter illustration.\nChapter: ${ch.title}\nSummary: ${ch.summary}\nText: ${ch.text}\nCharacters in this chapter:\n${charBlock}\nRULES: include ONLY the characters listed above. Cartoon children book illustration, soft lines, vibrant colors, warm lighting. NO text, NO letters, NO watermarks in the image. Describe poses, expressions, environment, mood. Output ONLY the final prompt, nothing else.`,
+    temperature:0.65, maxTokens:500
   });
 }
 
