@@ -309,7 +309,7 @@ async function callGemini({ prompt, images=[], temperature=0.7, maxTokens=5000 }
   parts.push({ text: prompt });
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(S.apiKey)}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=${encodeURIComponent(S.apiKey)}`,
     {
       method:'POST',
       headers:{'Content-Type':'application/json'},
