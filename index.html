@@ -2,7 +2,7 @@
 <html lang="it" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>AI Storybook Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,9 +46,6 @@ h1,h2,h3{font-family:var(--font-display)}
 .field input,.field textarea,.field select{background:var(--surface2);color:var(--text);border:1px solid var(--faint);border-radius:8px;padding:9px 12px;font-size:14px;font-family:var(--font-body);outline:none;transition:border-color .15s}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)}
 .field textarea{min-height:90px;resize:vertical}
-.field input[type=file]{padding:6px;cursor:pointer}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
-.row .field{flex:1;min-width:130px;margin-bottom:0}
 .btn{border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;font-family:var(--font-body);cursor:pointer;transition:opacity .15s,transform .15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn:hover:not(:disabled){opacity:.85;transform:translateY(-1px)}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
@@ -91,25 +88,25 @@ h1,h2,h3{font-family:var(--font-display)}
 <div class="container">
   <div class="header">
     <div class="header-title">
-      <span style="font-size:28px">📖</span>
       <h1>AI Storybook Studio</h1>
     </div>
     <div class="header-pills">
       <span class="pill" id="pill-provider">Groq</span>
-      <span class="pill" id="pill-text-model">llama-3.3-70b-versatile</span>
+      <span class="pill" id="pill-text-model">llama-3.3-70b</span>
       <span class="pill">Pollinations.AI</span>
-      <span class="pill">No backend needed</span>
     </div>
   </div>
 
   <div class="grid2">
-    <div class="card mb20">
+    <div class="card">
       <div class="card-title">⚙️ Impostazioni</div>
-      <div class="card-sub">Usa una Groq API key per testo e analisi immagini. La chiave resta solo nella sessione corrente del browser.</div>
+      <div class="card-sub">Configura le API per AI e GitHub (salvataggio storie).</div>
+      
       <div class="field">
         <label>Groq API key</label>
-        <input type="password" id="inp-apikey" placeholder="gsk_..."/>
+        <input type="password" id="inp-apikey" placeholder="gsk_...">
       </div>
+      
       <div class="row">
         <div class="field">
           <label>Modello testo</label>
@@ -128,101 +125,95 @@ h1,h2,h3{font-family:var(--font-display)}
           </select>
         </div>
       </div>
+
+      <hr style="margin:16px 0; border:0; border-top:1px solid var(--border);">
+
+      <div class="field">
+        <label>GitHub Personal Access Token (per salvataggio)</label>
+        <input type="password" id="inp-gh-token" placeholder="ghp_...">
+      </div>
       <div class="row">
         <div class="field">
-          <label>Modello immagini</label>
-          <select id="inp-imgmodel">
-            <option value="flux">flux</option>
-            <option value="gptimage">gptimage</option>
-          </select>
+          <label>GitHub Owner</label>
+          <input type="text" id="inp-gh-owner" placeholder="Zizzo91">
         </div>
         <div class="field">
-          <label>Dimensione (px)</label>
-          <select id="inp-imgsize">
-            <option value="1024">1024</option>
-            <option value="768">768</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Seed globale</label>
-          <input type="number" id="inp-seed" placeholder="es. 42"/>
+          <label>GitHub Repo</label>
+          <input type="text" id="inp-gh-repo" placeholder="Storybook">
         </div>
       </div>
-      <button class="btn btn-accent" id="btn-save-settings">💾 Salva impostazioni</button>
-      <div class="status" id="status-settings"></div>
+
+      <div class="row" style="margin-top:10px">
+        <button class="btn btn-accent" id="btn-save-settings">💾 Salva impostazioni</button>
+        <div id="status-settings" class="status"></div>
+      </div>
     </div>
 
-    <div class="card mb20">
+    <div class="card">
       <div class="card-title">💡 Idea storia</div>
-      <div class="card-sub">Compila, raffina la versione breve e poi genera i 10 capitoli in 2 chiamate consecutive.</div>
-      <div class="row">
-        <div class="field">
-          <label>Titolo / tema</label>
-          <input type="text" id="inp-title" placeholder="Es. Il bosco delle stelle"/>
-        </div>
-        <div class="field">
-          <label>Target</label>
-          <input type="text" id="inp-audience" placeholder="Es. bambini 4-7 anni"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>Tono</label>
-          <input type="text" id="inp-tone" placeholder="Es. dolce, avventuroso"/>
-        </div>
-        <div class="field">
-          <label>Ambientazione</label>
-          <input type="text" id="inp-world" placeholder="Es. foresta magica"/>
-        </div>
-      </div>
+      <div class="card-sub">Compila i campi e genera la narrazione.</div>
+      
       <div class="field">
-        <label>Idea breve iniziale</label>
-        <textarea id="inp-idea" placeholder="Scrivi qui l'idea base della storia..."></textarea>
+        <label>Titolo / tema principale</label>
+        <input type="text" id="inp-title" placeholder="Es. Il bosco delle stelle">
       </div>
+      
       <div class="row">
-        <button class="btn btn-cyan" id="btn-refine">✨ Raffina idea breve</button>
-        <button class="btn btn-green" id="btn-genstory">📚 Genera 10 capitoli</button>
+        <div class="field"><label>Target</label><input type="text" id="inp-audience" placeholder="bambini 4-7 anni"></div>
+        <div class="field"><label>Tono</label><input type="text" id="inp-tone" placeholder="dolce, magico"></div>
       </div>
-      <div class="status" id="status-story"></div>
+      
+      <div class="field">
+        <label>Idea base</label>
+        <textarea id="inp-idea" placeholder="Scrivi qui la tua idea originale..."></textarea>
+      </div>
+
+      <div class="row">
+        <button class="btn btn-cyan" id="btn-refine">✨ Raffina idea</button>
+        <button class="btn btn-green" id="btn-genstory">📚 Genera 10 capitoli</button>
+        <button class="btn btn-accent" id="btn-github-save">📤 Salva su GitHub</button>
+      </div>
+      <div id="status-story" class="status"></div>
     </div>
   </div>
 
   <div class="card mb20">
     <div class="card-title">🧑‍🎨 Protagonisti</div>
-    <div class="card-sub">Carica le immagini, genera la descrizione con AI, modificala e salvala. Sarà usata nei prompt dei capitoli.</div>
-    <button class="btn btn-cyan" id="btn-add-char">+ Aggiungi personaggio</button>
-    <div class="char-grid" id="char-grid"><div class="empty">Nessun personaggio aggiunto.</div></div>
+    <div class="card-sub">Descrivi i personaggi per coerenza visiva.</div>
+    <button class="btn btn-ghost" id="btn-add-char">+ Aggiungi personaggio</button>
+    <div id="char-grid" class="char-grid"></div>
   </div>
 
   <div class="card mb20">
-    <div class="card-title">📄 Versione breve</div>
-    <div class="story-box" id="short-story-box">Nessuna versione breve generata.</div>
+    <div class="card-title">📄 Versione raffinata</div>
+    <div id="short-story-box" class="story-box">Nessun testo raffinato.</div>
   </div>
 
   <div class="card">
-    <div class="card-title">📖 Capitoli</div>
-    <div class="card-sub">Ogni capitolo include solo i personaggi citati in quella scena. Modifica il prompt prima di generare l'immagine.</div>
-    <div class="chapter-list" id="chapter-list"><div class="empty">Nessun capitolo generato.</div></div>
+    <div class="card-title">📖 Capitoli della storia</div>
+    <div id="chapter-list" class="chapter-list" style="margin-top:16px"></div>
   </div>
 </div>
 
 <script>
 const S = {
   apiKey: '',
+  ghToken: '', ghOwner: '', ghRepo: '',
   textModel: 'llama-3.3-70b-versatile',
   visionModel: 'meta-llama/llama-4-scout-17b-16e-instruct',
-  imgModel: 'flux',
-  imgSize: 1024,
-  globalSeed: '',
-  title: '', audience: '', tone: '', world: '', idea: '',
-  shortVersion: '',
-  chapters: [],
-  characters: []
+  title: '', audience: '', tone: '', world: '', idea: '', shortVersion: '',
+  chapters: [], characters: []
 };
 
 let _uid = 0;
 function uid(){ return 'c'+(++_uid)+'_'+Math.random().toString(36).slice(2,7); }
-function setStatus(id,msg,type=''){ const el=document.getElementById(id); if(!el) return; el.textContent=msg; el.className='status'+(type?' '+type:''); }
+
+function setStatus(id,msg,type=''){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.textContent=msg;
+  el.className='status'+(type?' '+type:'');
+}
 
 function stripFences(t){
   return t.trim()
@@ -232,425 +223,279 @@ function stripFences(t){
     .trim();
 }
 
-// Estrae il primo JSON array o oggetto valido dalla risposta,
-// gestendo il caso in cui il modello aggiunga testo prima/dopo
 function extractJson(raw){
   const cleaned = stripFences(raw);
-  // prova parse diretto
   try { return JSON.parse(cleaned); } catch {}
-  // cerca il primo { o [ e l'ultimo } o ]
   const first = Math.min(
     cleaned.indexOf('{') === -1 ? Infinity : cleaned.indexOf('{'),
     cleaned.indexOf('[') === -1 ? Infinity : cleaned.indexOf('[')
   );
-  if(first === Infinity) throw new Error('Nessun JSON trovato nella risposta.');
+  if(first === Infinity) throw new Error('Nessun JSON trovato.');
   const opener = cleaned[first];
   const closer = opener === '{' ? '}' : ']';
   const last = cleaned.lastIndexOf(closer);
-  if(last === -1) throw new Error('JSON incompleto nella risposta.');
+  if(last === -1) throw new Error('JSON incompleto.');
   return JSON.parse(cleaned.slice(first, last + 1));
 }
 
 function readInputs(){
   S.apiKey=document.getElementById('inp-apikey').value.trim();
+  S.ghToken=document.getElementById('inp-gh-token').value.trim();
+  S.ghOwner=document.getElementById('inp-gh-owner').value.trim();
+  S.ghRepo=document.getElementById('inp-gh-repo').value.trim();
   S.textModel=document.getElementById('inp-textmodel').value;
   S.visionModel=document.getElementById('inp-visionmodel').value;
-  S.imgModel=document.getElementById('inp-imgmodel').value;
-  S.imgSize=Number(document.getElementById('inp-imgsize').value)||1024;
-  S.globalSeed=document.getElementById('inp-seed').value.trim();
   S.title=document.getElementById('inp-title').value.trim();
   S.audience=document.getElementById('inp-audience').value.trim();
   S.tone=document.getElementById('inp-tone').value.trim();
-  S.world=document.getElementById('inp-world').value.trim();
   S.idea=document.getElementById('inp-idea').value.trim();
 }
 
 async function callGroqText({ prompt, temperature=0.7, maxTokens=3500 }){
-  if(!S.apiKey) throw new Error('⚠️ Inserisci e salva prima la Groq API key.');
+  if(!S.apiKey) throw new Error('⚠️ Inserisci la Groq API key.');
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method:'POST',
     headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${S.apiKey}` },
     body: JSON.stringify({
       model: S.textModel,
       messages: [{ role:'user', content: prompt }],
-      temperature,
-      max_tokens: maxTokens
+      temperature, max_tokens: maxTokens
     })
   });
-  const txt = await res.text();
-  if(!res.ok){
-    let msg = `Groq ${res.status}`;
-    try{ const j=JSON.parse(txt); msg+=': '+(j?.error?.message||txt.slice(0,300)); }
-    catch{ msg+=': '+txt.slice(0,300); }
-    throw new Error(msg);
-  }
-  const data = JSON.parse(txt);
-  const out = data?.choices?.[0]?.message?.content?.trim();
-  if(!out) throw new Error('Groq non ha restituito testo.');
-  return out;
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error?.message || 'Errore Groq');
+  return data.choices[0].message.content.trim();
 }
 
-async function callGroqVision({ prompt, imageDataUrl, maxTokens=1200, temperature=0.4 }){
-  if(!S.apiKey) throw new Error('⚠️ Inserisci e salva prima la Groq API key.');
+async function callGroqVision({ prompt, imageDataUrl }){
+  if(!S.apiKey) throw new Error('⚠️ Inserisci la Groq API key.');
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method:'POST',
     headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${S.apiKey}` },
     body: JSON.stringify({
       model: S.visionModel,
-      messages: [{
-        role:'user',
-        content:[
-          { type:'text', text: prompt },
-          { type:'image_url', image_url:{ url: imageDataUrl } }
-        ]
-      }],
-      temperature,
-      max_tokens: maxTokens
+      messages: [{ role:'user', content:[
+        { type:'text', text: prompt },
+        { type:'image_url', image_url:{ url: imageDataUrl } }
+      ]}],
+      temperature: 0.4, max_tokens: 1000
     })
   });
-  const txt = await res.text();
-  if(!res.ok){
-    let msg = `Groq vision ${res.status}`;
-    try{ const j=JSON.parse(txt); msg+=': '+(j?.error?.message||txt.slice(0,300)); }
-    catch{ msg+=': '+txt.slice(0,300); }
-    throw new Error(msg);
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error?.message || 'Errore Groq Vision');
+  return data.choices[0].message.content.trim();
+}
+
+// --- GITHUB SAVE ---
+document.getElementById('btn-github-save').addEventListener('click', async ()=>{
+  readInputs();
+  if(!S.ghToken || !S.ghOwner || !S.ghRepo){
+    setStatus('status-story','Configura i dati GitHub nelle impostazioni.','err');
+    return;
   }
-  const data = JSON.parse(txt);
-  const out = data?.choices?.[0]?.message?.content?.trim();
-  if(!out) throw new Error('Groq vision non ha restituito testo.');
-  return out;
-}
+  const btn = document.getElementById('btn-github-save');
+  btn.disabled = true;
+  setStatus('status-story','Salvataggio su GitHub...','warn');
 
-async function fileToData(file,maxPx=1024){
-  const bmp=await createImageBitmap(file);
-  const scale=Math.min(1,maxPx/Math.max(bmp.width,bmp.height));
-  const w=Math.round(bmp.width*scale), h=Math.round(bmp.height*scale);
-  const cv=document.createElement('canvas');
-  cv.width=w; cv.height=h;
-  cv.getContext('2d').drawImage(bmp,0,0,w,h);
-  const mime=file.type==='image/png'?'image/png':'image/jpeg';
-  const dataUrl=cv.toDataURL(mime,0.88);
-  return { dataUrl, mimeType:mime };
-}
+  try {
+    const slug = (S.title || 'storia-senza-titolo').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+    const path = `stories/${slug}.json`;
+    const storyData = {
+      title: S.title,
+      audience: S.audience,
+      tone: S.tone,
+      idea: S.idea,
+      shortVersion: S.shortVersion,
+      characters: S.characters.map(c => ({ name: c.name, description: c.description })),
+      chapters: S.chapters.map(ch => ({ number: ch.number, title: ch.title, text: ch.text, characters: ch.characters })),
+      timestamp: new Date().toISOString()
+    };
 
-function pollinationsUrl(prompt, seed){
-  const s=seed||S.globalSeed||String(Math.floor(Math.random()*9999999));
-  const params=new URLSearchParams({
-    model:S.imgModel||'flux',
-    width:String(S.imgSize||1024),
-    height:String(S.imgSize||1024),
-    seed:String(s),
-    enhance:'true', safe:'true', nologo:'true'
-  });
-  return { url:`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params}&_t=${Date.now()}`, seed:s };
-}
+    const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(storyData, null, 2))));
+    
+    // Check if file exists to get SHA
+    let sha = '';
+    const checkRes = await fetch(`https://api.github.com/repos/${S.ghOwner}/${S.ghRepo}/contents/${path}`, {
+      headers: { 'Authorization': `token ${S.ghToken}` }
+    });
+    if(checkRes.ok) {
+      const checkData = await checkRes.json();
+      sha = checkData.sha;
+    }
 
-// ─── SETTINGS ────────────────────────────────────────────────────────────────
+    const saveRes = await fetch(`https://api.github.com/repos/${S.ghOwner}/${S.ghRepo}/contents/${path}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${S.ghToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `Save story: ${S.title}`,
+        content: contentBase64,
+        sha: sha || undefined
+      })
+    });
+
+    if(!saveRes.ok) {
+      const err = await saveRes.json();
+      throw new Error(err.message || 'Errore salvataggio GitHub');
+    }
+
+    setStatus('status-story','Storia salvata con successo su GitHub! ✓','ok');
+  } catch (e) {
+    setStatus('status-story', e.message, 'err');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// --- SETTINGS ---
 document.getElementById('btn-save-settings').addEventListener('click', ()=>{
   readInputs();
-  document.getElementById('pill-provider').textContent='Groq';
-  document.getElementById('pill-text-model').textContent=S.textModel;
-  setStatus('status-settings',`Impostazioni salvate ✓ — ${S.textModel}`,'ok');
+  localStorage.setItem('storybook_settings', JSON.stringify({
+    ghToken: S.ghToken, ghOwner: S.ghOwner, ghRepo: S.ghRepo,
+    textModel: S.textModel, visionModel: S.visionModel
+  }));
+  setStatus('status-settings','Impostazioni salvate localmente ✓','ok');
 });
 
-// ─── RAFFINA IDEA ────────────────────────────────────────────────────────────
+window.addEventListener('load', ()=>{
+  const saved = localStorage.getItem('storybook_settings');
+  if(saved){
+    const d = JSON.parse(saved);
+    document.getElementById('inp-gh-token').value = d.ghToken || '';
+    document.getElementById('inp-gh-owner').value = d.ghOwner || '';
+    document.getElementById('inp-gh-repo').value = d.ghRepo || '';
+    document.getElementById('inp-textmodel').value = d.textModel || 'llama-3.3-70b-versatile';
+    document.getElementById('inp-visionmodel').value = d.visionModel || 'meta-llama/llama-4-scout-17b-16e-instruct';
+    readInputs();
+  }
+});
+
+// --- REST OF LOGIC (REFINED & GEN) ---
 document.getElementById('btn-refine').addEventListener('click', async ()=>{
   readInputs();
-  if(!S.idea){ setStatus('status-story','Scrivi prima un\'idea base.','err'); return; }
-  const btn=document.getElementById('btn-refine');
-  btn.disabled=true;
-  setStatus('status-story','Raffinamento in corso...','warn');
-  try{
-    const charLines=S.characters.filter(c=>c.name.trim())
-      .map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n')
-      ||'- nessun protagonista definito';
-    const result=await callGroqText({
-      prompt:`Rielabora questa idea in una versione breve coinvolgente di 120-180 parole, in italiano.\nTarget: ${S.audience||'bambini'} | Tono: ${S.tone||'dolce e avventuroso'} | Ambientazione: ${S.world||'libera'} | Titolo: ${S.title||'senza titolo'}\nProtagonisti:\n${charLines}\nIdea originale:\n${S.idea}\nRestituisci SOLO il testo finale, senza titoli o intestazioni.`,
-      temperature:0.7, maxTokens:700
-    });
-    S.shortVersion=result.trim();
-    document.getElementById('short-story-box').textContent=S.shortVersion;
-    setStatus('status-story','Versione breve aggiornata ✓','ok');
-  }catch(e){ setStatus('status-story',e.message,'err'); }
-  finally{ btn.disabled=false; }
+  if(!S.idea) return setStatus('status-story','Scrivi un\'idea base.','err');
+  const btn = document.getElementById('btn-refine');
+  btn.disabled = true;
+  setStatus('status-story','Raffinamento...','warn');
+  try {
+    const res = await callGroqText({ prompt: `Raffina questa idea per una storia: ${S.idea}. Target: ${S.audience}. Tono: ${S.tone}. Restituisci circa 150 parole in italiano.` });
+    S.shortVersion = res;
+    document.getElementById('short-story-box').textContent = res;
+    setStatus('status-story','Idea raffinata! ✓','ok');
+  } catch(e) { setStatus('status-story', e.message, 'err'); }
+  finally { btn.disabled = false; }
 });
 
-// ─── GENERA STORIA (2 chiamate) ───────────────────────────────────────────────
 document.getElementById('btn-genstory').addEventListener('click', async ()=>{
   readInputs();
-  const named=S.characters.filter(c=>c.name.trim());
-  if(!named.length){ setStatus('status-story','Aggiungi almeno un personaggio con nome.','err'); return; }
-  const btn=document.getElementById('btn-genstory');
-  btn.disabled=true;
-
-  try{
-    const charLines=named.map(c=>`- ${c.name}: ${c.description||'nessuna descrizione'}`).join('\n');
-    const base=S.shortVersion||S.idea||'storia per bambini';
-    const ctx=`Titolo: ${S.title||'senza titolo'} | Tono: ${S.tone||'dolce'} | Ambientazione: ${S.world||'libera'} | Target: ${S.audience||'bambini'}`;
-    const charCtx=`Protagonisti disponibili:\n${charLines}`;
-    const rules=`REGOLE IMPORTANTI:
-- Restituisci SOLO un array JSON valido, senza markdown, senza testo prima o dopo.
-- Ogni elemento: {"number":N,"title":"...","summary":"...","text":"...","characters":["Nome1"]}
-- "text": 150-200 parole, ben scritto e scorrevole in italiano.
-- "summary": 1-2 frasi.
-- "characters": SOLO i nomi dei personaggi presenti in quel capitolo, dalla lista protagonisti.`;
-
-    // ── PRIMA METÀ: capitoli 1-5 ──
-    setStatus('status-story','Generazione prima metà (cap. 1-5)...','warn');
-    const raw1=await callGroqText({
-      prompt:`Stai scrivendo i PRIMI 5 CAPITOLI (da 1 a 5) di una storia illustrata.
-Idea base: ${base}
-${ctx}
-${charCtx}
-
-${rules}
-
-La storia deve avere continuità: i capitoli 1-5 introducono i personaggi, il problema e l'avventura inizia.
-Restituisci SOLO un array JSON con esattamente 5 oggetti (capitoli 1-5).`,
-      temperature:0.75, maxTokens:3500
-    });
-
-    const half1=extractJson(raw1);
-    if(!Array.isArray(half1)||half1.length!==5)
-      throw new Error(`La prima metà non contiene esattamente 5 capitoli (ricevuti: ${Array.isArray(half1)?half1.length:'non array'}). Riprova.`);
-
-    // Costruisco un riassunto della prima metà da passare alla seconda chiamata
-    const firstHalfSummary=half1.map(ch=>`Cap.${ch.number} "${ch.title}": ${ch.summary||ch.text?.slice(0,120)||''}`).join('\n');
-
-    // ── SECONDA METÀ: capitoli 6-10 ──
-    setStatus('status-story','Generazione seconda metà (cap. 6-10)...','warn');
-    const raw2=await callGroqText({
-      prompt:`Stai scrivendo gli ULTIMI 5 CAPITOLI (da 6 a 10) di una storia illustrata.
-Idea base: ${base}
-${ctx}
-${charCtx}
-
-COSA È GIÀ SUCCESSO nei capitoli 1-5 (mantieni la continuità narrativa):
-${firstHalfSummary}
-
-${rules}
-
-I capitoli 6-10 devono: sviluppare la tensione, avvicinarsi al climax e concludere la storia con un finale soddisfacente.
-Restituisci SOLO un array JSON con esattamente 5 oggetti (capitoli 6-10, con "number" da 6 a 10).`,
-      temperature:0.75, maxTokens:3500
-    });
-
-    const half2=extractJson(raw2);
-    if(!Array.isArray(half2)||half2.length!==5)
-      throw new Error(`La seconda metà non contiene esattamente 5 capitoli (ricevuti: ${Array.isArray(half2)?half2.length:'non array'}). Riprova.`);
-
-    // ── UNISCO LE DUE METÀ ──
-    const allChapters=[...half1,...half2];
-    S.chapters=allChapters.map((ch,i)=>({
-      number:Number(ch.number||i+1),
-      title:ch.title||`Capitolo ${i+1}`,
-      summary:ch.summary||'',
-      text:ch.text||'',
-      characters:Array.isArray(ch.characters)?ch.characters:[],
-      imagePrompt:'', imageUrl:'', imageSeed:''
-    }));
-
+  const btn = document.getElementById('btn-genstory');
+  btn.disabled = true;
+  setStatus('status-story','Generazione capitoli (1-5)...','warn');
+  try {
+    const prompt = `Genera i primi 5 capitoli di una storia basata su: ${S.shortVersion || S.idea}. Restituisci SOLO un array JSON: [{"number":1,"title":"...","text":"...","characters":["..."]}]`;
+    const res1 = await callGroqText({ prompt });
+    const chapters1 = extractJson(res1);
+    
+    setStatus('status-story','Generazione capitoli (6-10)...','warn');
+    const res2 = await callGroqText({ prompt: `Continua la storia dopo questi capitoli: ${res1}. Genera i capitoli 6-10. Stesso formato JSON.` });
+    const chapters2 = extractJson(res2);
+    
+    S.chapters = [...chapters1, ...chapters2];
     renderChapters();
-    setStatus('status-story',`Storia generata! 10 capitoli pronti ✓`,'ok');
-  }catch(e){ setStatus('status-story',e.message,'err'); }
-  finally{ btn.disabled=false; }
+    setStatus('status-story','10 capitoli pronti! ✓','ok');
+  } catch(e) { setStatus('status-story', e.message, 'err'); }
+  finally { btn.disabled = false; }
 });
 
-// ─── CHARACTERS ───────────────────────────────────────────────────────────────
 document.getElementById('btn-add-char').addEventListener('click', ()=>{
-  S.characters.push({ id:uid(), name:'', imageDataUrl:'', mimeType:'', description:'' });
+  const id = uid();
+  S.characters.push({ id, name: '', description: '', imageDataUrl: '' });
   renderCharacters();
 });
 
 function renderCharacters(){
-  const grid=document.getElementById('char-grid');
-  grid.innerHTML='';
-  if(!S.characters.length){ grid.innerHTML='<div class="empty">Nessun personaggio aggiunto.</div>'; return; }
-  S.characters.forEach(char=>grid.appendChild(buildCharCard(char)));
+  const grid = document.getElementById('char-grid');
+  grid.innerHTML = '';
+  S.characters.forEach(char => {
+    const card = document.createElement('div');
+    card.className = 'char-card';
+    card.innerHTML = `
+      <div class="char-top">
+        <div class="char-thumb" id="thumb-${char.id}">${char.imageDataUrl ? `<img src="${char.imageDataUrl}">` : 'No img'}</div>
+        <div class="char-info">
+          <div class="field"><label>Nome</label><input type="text" value="${char.name}" oninput="updateChar('${char.id}','name',this.value)"></div>
+          <div class="field"><label>Immagine</label><input type="file" onchange="uploadImg('${char.id}',this)"></div>
+        </div>
+      </div>
+      <div class="field"><label>Descrizione</label><textarea id="desc-${char.id}" oninput="updateChar('${char.id}','description',this.value)">${char.description}</textarea></div>
+      <button class="btn btn-cyan btn-sm" onclick="analyzeChar('${char.id}')">🔍 Analizza</button>
+    `;
+    grid.appendChild(card);
+  });
 }
 
-function buildCharCard(char){
-  const card=document.createElement('div'); card.className='char-card';
-  const top=document.createElement('div'); top.className='char-top';
-  const thumb=document.createElement('div'); thumb.className='char-thumb'; thumb.id='thumb_'+char.id;
-  if(char.imageDataUrl){ const img=document.createElement('img'); img.src=char.imageDataUrl; img.alt=char.name||''; thumb.appendChild(img); }
-  else { thumb.textContent='Nessuna\nimmagine'; }
+function updateChar(id, key, val){
+  const c = S.characters.find(x => x.id === id);
+  if(c) c[key] = val;
+}
 
-  const info=document.createElement('div'); info.className='char-info';
-  const fName=document.createElement('div'); fName.className='field';
-  const lName=document.createElement('label'); lName.textContent='Nome';
-  const iName=document.createElement('input'); iName.type='text'; iName.value=char.name; iName.placeholder='Es. Leo il coniglietto';
-  iName.addEventListener('input',e=>{ char.name=e.target.value; });
-  fName.append(lName,iName);
-
-  const fFile=document.createElement('div'); fFile.className='field';
-  const lFile=document.createElement('label'); lFile.textContent='Immagine';
-  const iFile=document.createElement('input'); iFile.type='file'; iFile.accept='image/png,image/jpeg,image/webp';
-  iFile.addEventListener('change', async e=>{
-    const file=e.target.files?.[0]; if(!file) return;
-    try{
-      const d=await fileToData(file);
-      char.imageDataUrl=d.dataUrl; char.mimeType=d.mimeType;
-      const t=document.getElementById('thumb_'+char.id);
-      if(t){ t.innerHTML=''; const img=document.createElement('img'); img.src=d.dataUrl; t.appendChild(img); }
-    }catch(err){ alert('Errore immagine: '+err.message); }
-  });
-  fFile.append(lFile,iFile);
-  info.append(fName,fFile);
-  top.append(thumb,info);
-
-  const fDesc=document.createElement('div'); fDesc.className='field';
-  const lDesc=document.createElement('label'); lDesc.textContent='Descrizione (usata nei prompt immagine)';
-  const taDesc=document.createElement('textarea'); taDesc.id='desc_'+char.id; taDesc.value=char.description||''; taDesc.placeholder='Genera o scrivi la descrizione...';
-  taDesc.addEventListener('input',e=>{ char.description=e.target.value; });
-  fDesc.append(lDesc,taDesc);
-
-  const btnRow=document.createElement('div'); btnRow.className='row'; btnRow.style.marginTop='8px';
-
-  const btnAnalyze=document.createElement('button'); btnAnalyze.className='btn btn-cyan'; btnAnalyze.textContent='🔍 Genera descrizione da immagine';
-  btnAnalyze.addEventListener('click', async ()=>{
-    if(!char.imageDataUrl){ alert('Carica prima un\'immagine.'); return; }
-    btnAnalyze.disabled=true; btnAnalyze.textContent='⏳ Analisi...';
-    try{
-      const result=await callGroqVision({
-        prompt:`Analizza questa immagine e scrivi una descrizione visuale dettagliata in italiano, utile per generare illustrazioni coerenti in stile cartoon da libro per bambini. Includi: età apparente, corporatura, capelli, occhi, tratti distintivi, abbigliamento, accessori, espressione di base, palette colori. NON descrivere lo sfondo. ${char.name?'Nome: '+char.name:''} Chiudi con: "Resa visiva: cartoon children book illustration, linee morbide, colori vivaci e coerenti." Restituisci SOLO il testo della descrizione.`,
-        imageDataUrl: char.imageDataUrl,
-        maxTokens: 900, temperature: 0.4
-      });
-      char.description=result.trim();
-      const ta=document.getElementById('desc_'+char.id);
-      if(ta) ta.value=char.description;
-    }catch(e){ alert(e.message); }
-    finally{ btnAnalyze.disabled=false; btnAnalyze.textContent='🔍 Genera descrizione da immagine'; }
-  });
-
-  const btnSave=document.createElement('button'); btnSave.className='btn btn-accent'; btnSave.textContent='💾 Salva';
-  btnSave.addEventListener('click', ()=>{
-    const ta=document.getElementById('desc_'+char.id);
-    if(ta) char.description=ta.value;
-    btnSave.textContent='✓ Salvato!';
-    setTimeout(()=>{ btnSave.textContent='💾 Salva'; },1500);
-    refreshChapterTags();
-  });
-
-  const btnDel=document.createElement('button'); btnDel.className='btn btn-red'; btnDel.textContent='🗑';
-  btnDel.addEventListener('click', ()=>{
-    if(!confirm('Rimuovere '+(char.name||'questo personaggio')+'?')) return;
-    S.characters=S.characters.filter(c=>c.id!==char.id);
+async function uploadImg(id, input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    updateChar(id, 'imageDataUrl', e.target.result);
     renderCharacters();
-    renderChapters();
-  });
-  btnRow.append(btnAnalyze,btnSave,btnDel);
-  card.append(top,fDesc,btnRow);
-  return card;
+  };
+  reader.readAsDataURL(file);
 }
 
-// ─── CHAPTERS ─────────────────────────────────────────────────────────────────
+async function analyzeChar(id){
+  const c = S.characters.find(x => x.id === id);
+  if(!c || !c.imageDataUrl) return alert('Carica un\'immagine.');
+  setStatus('status-story','Analisi personaggio...','warn');
+  try {
+    const res = await callGroqVision({ prompt: 'Descrivi l\'aspetto fisico di questo personaggio per un libro illustrato per bambini.', imageDataUrl: c.imageDataUrl });
+    c.description = res;
+    renderCharacters();
+    setStatus('status-story','Analisi completata!','ok');
+  } catch(e) { alert(e.message); }
+}
+
 function renderChapters(){
-  const list=document.getElementById('chapter-list');
-  list.innerHTML='';
-  if(!S.chapters.length){ list.innerHTML='<div class="empty">Nessun capitolo generato.</div>'; return; }
-  S.chapters.forEach((ch,idx)=>list.appendChild(buildChapterCard(ch,idx)));
-}
-
-function refreshChapterTags(){
-  S.chapters.forEach((ch,idx)=>{
-    const el=document.getElementById('chtags_'+idx);
-    if(!el) return;
-    el.innerHTML='';
-    (ch.characters.length?ch.characters:['Nessun personaggio']).forEach(n=>{
-      const s=document.createElement('span'); s.className='ch-tag'; s.textContent=n; el.appendChild(s);
-    });
+  const list = document.getElementById('chapter-list');
+  list.innerHTML = '';
+  S.chapters.forEach(ch => {
+    const card = document.createElement('div');
+    card.className = 'ch-card';
+    card.innerHTML = `
+      <div class="ch-head">
+        <h3>Cap. ${ch.number}: ${ch.title}</h3>
+        <div class="ch-tags">${ch.characters.map(n => `<span class="ch-tag">${n}</span>`).join('')}</div>
+      </div>
+      <div class="ch-body">
+        <div class="ch-text">${ch.text}</div>
+        <div class="right">
+          <button class="btn btn-green" onclick="genImg(${ch.number-1})">🎨 Immagine</button>
+          <div class="img-preview" id="img-${ch.number-1}">Nessuna immagine</div>
+        </div>
+      </div>
+    `;
+    list.appendChild(card);
   });
 }
 
-function buildChapterCard(ch,idx){
-  const card=document.createElement('div'); card.className='ch-card';
-  const head=document.createElement('div'); head.className='ch-head';
-  const titleDiv=document.createElement('div');
-  const h3=document.createElement('h3'); h3.textContent=`Capitolo ${ch.number} · ${ch.title}`;
-  const sumDiv=document.createElement('div'); sumDiv.className='ch-summary'; sumDiv.textContent=ch.summary||'';
-  titleDiv.append(h3,sumDiv);
-  const tags=document.createElement('div'); tags.className='ch-tags'; tags.id='chtags_'+idx;
-  (ch.characters.length?ch.characters:['Nessun personaggio']).forEach(n=>{ const s=document.createElement('span'); s.className='ch-tag'; s.textContent=n; tags.appendChild(s); });
-  head.append(titleDiv,tags);
-
-  const body=document.createElement('div'); body.className='ch-body';
-  const left=document.createElement('div');
-  const storyBox=document.createElement('div'); storyBox.className='story-box ch-text'; storyBox.textContent=ch.text||'';
-  left.appendChild(storyBox);
-
-  const right=document.createElement('div');
-  const fPrompt=document.createElement('div'); fPrompt.className='field';
-  const lPrompt=document.createElement('label'); lPrompt.textContent='Prompt immagine (modificabile)';
-  const taPrompt=document.createElement('textarea'); taPrompt.value=ch.imagePrompt||''; taPrompt.placeholder='Genera o scrivi il prompt...';
-  taPrompt.addEventListener('input',e=>{ ch.imagePrompt=e.target.value; });
-  fPrompt.append(lPrompt,taPrompt);
-
-  const btnRow2=document.createElement('div'); btnRow2.className='row'; btnRow2.style.marginTop='8px';
-
-  const btnGP=document.createElement('button'); btnGP.className='btn btn-cyan'; btnGP.textContent='✨ Genera prompt';
-  btnGP.addEventListener('click', async ()=>{
-    btnGP.disabled=true; btnGP.textContent='⏳ ...';
-    try{ await generateChapterPrompt(idx); taPrompt.value=ch.imagePrompt; }
-    catch(e){ alert(e.message); }
-    finally{ btnGP.disabled=false; btnGP.textContent='✨ Genera prompt'; }
-  });
-
-  const btnSP=document.createElement('button'); btnSP.className='btn btn-accent'; btnSP.textContent='💾 Salva prompt';
-  btnSP.addEventListener('click', ()=>{
-    ch.imagePrompt=taPrompt.value;
-    btnSP.textContent='✓ Salvato!';
-    setTimeout(()=>{ btnSP.textContent='💾 Salva prompt'; },1500);
-  });
-
-  const btnGI=document.createElement('button'); btnGI.className='btn btn-green'; btnGI.textContent='🎨 Genera immagine';
-  btnGI.addEventListener('click', async ()=>{
-    btnGI.disabled=true; btnGI.textContent='⏳ Generazione...';
-    try{ await generateChapterImage(idx,preview); }
-    catch(e){ alert(e.message); }
-    finally{ btnGI.disabled=false; btnGI.textContent='🎨 Genera immagine'; }
-  });
-  btnRow2.append(btnGP,btnSP,btnGI);
-
-  const preview=document.createElement('div'); preview.className='img-preview'; preview.id='prev_'+idx;
-  if(ch.imageUrl){ const img=document.createElement('img'); img.src=ch.imageUrl; img.alt='Cap. '+ch.number; preview.appendChild(img); }
-  else { preview.textContent='Nessuna immagine generata.'; }
-
-  const hint=document.createElement('div'); hint.className='hint';
-  hint.textContent='Personaggi in questa scena: '+(ch.characters.join(', ')||'nessuno');
-  right.append(fPrompt,btnRow2,preview,hint);
-  body.append(left,right);
-  card.append(head,body);
-  return card;
-}
-
-async function generateChapterPrompt(idx){
-  const ch=S.chapters[idx];
-  const rel=S.characters.filter(c=>ch.characters.includes(c.name));
-  const charBlock=rel.length
-    ? rel.map(c=>`- ${c.name}: ${c.description||'no description'}`).join('\n')
-    : '(no specific character — create an atmospheric scene)';
-  ch.imagePrompt=await callGroqText({
-    prompt:`Write ONE image generation prompt in English for this children's book chapter illustration.\nChapter: ${ch.title}\nSummary: ${ch.summary}\nText: ${ch.text}\nCharacters in this chapter:\n${charBlock}\nRULES: include ONLY the characters listed above. Cartoon children book illustration, soft lines, vibrant colors, warm lighting. NO text, NO letters, NO watermarks in the image. Describe poses, expressions, environment, mood. Output ONLY the final prompt, nothing else.`,
-    temperature:0.65, maxTokens:500
-  });
-}
-
-async function generateChapterImage(idx,previewEl){
-  const ch=S.chapters[idx];
-  if(!ch.imagePrompt.trim()) await generateChapterPrompt(idx);
-  const {url,seed}=pollinationsUrl(ch.imagePrompt,ch.imageSeed);
-  ch.imageSeed=seed; ch.imageUrl=url;
-  const pEl=previewEl||document.getElementById('prev_'+idx);
-  if(pEl){
-    pEl.innerHTML='';
-    const img=document.createElement('img');
-    img.src=ch.imageUrl; img.alt='Cap. '+ch.number; img.className='loading';
-    img.onload=()=>img.classList.remove('loading');
-    img.onerror=()=>{ img.style.display='none'; pEl.textContent='Errore caricamento immagine.'; };
-    pEl.appendChild(img);
-  }
+async function genImg(idx){
+  const ch = S.chapters[idx];
+  const el = document.getElementById(`img-${idx}`);
+  el.innerHTML = '<div class="loading">Generazione...</div>';
+  const prompt = `Children book illustration, ${ch.text.slice(0, 200)}. Characters: ${ch.characters.join(', ')}. Soft colors.`;
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${Math.floor(Math.random()*99999)}&nologo=true`;
+  const img = new Image();
+  img.src = url;
+  img.onload = () => el.innerHTML = `<img src="${url}">`;
 }
 </script>
 </body>
