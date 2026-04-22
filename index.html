@@ -98,49 +98,35 @@ h1,h2,h3{font-family:var(--font-display)}
  </div>
  <div class="grid2">
   <div class="card">
-   <div class="card-title">⚙️ Impostazioni</div>
-   <div class="card-sub">Configura le API per AI e GitHub (salvataggio storie).</div>
+   <div class="card-title">⚙️ Modelli</div>
+   <div class="card-sub">Seleziona i motori AI per la tua storia.</div>
    
    <div class="field">
-    <label>Groq API key</label>
-    <input type="password" id="inp-apikey" placeholder="gsk_...">
+    <label>Modello testo</label>
+    <select id="inp-textmodel">
+     <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+     <option value="qwen-qwq-32b">qwen-qwq-32b</option>
+     <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b</option>
+     <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+    </select>
+   </div>
+   <div class="field">
+    <label>Modello vision</label>
+    <select id="inp-visionmodel">
+     <option value="meta-llama/llama-4-scout-17b-16e-instruct">llama-4-scout</option>
+     <option value="meta-llama/llama-4-maverick-17b-128e-instruct">llama-4-maverick</option>
+    </select>
    </div>
    
-   <div class="row">
-    <div class="field">
-     <label>Modello testo</label>
-     <select id="inp-textmodel">
-      <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
-      <option value="qwen-qwq-32b">qwen-qwq-32b</option>
-      <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b</option>
-      <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
-     </select>
-    </div>
-    <div class="field">
-     <label>Modello vision</label>
-     <select id="inp-visionmodel">
-      <option value="meta-llama/llama-4-scout-17b-16e-instruct">llama-4-scout</option>
-      <option value="meta-llama/llama-4-maverick-17b-128e-instruct">llama-4-maverick</option>
-     </select>
-    </div>
+   <!-- Hidden settings fields -->
+   <div style="display:none">
+    <input type="password" id="inp-apikey">
+    <input type="password" id="inp-gh-token">
+    <input type="text" id="inp-gh-owner">
+    <input type="text" id="inp-gh-repo">
    </div>
-   <hr style="margin:16px 0; border:0; border-top:1px solid var(--border);">
-   <div class="field">
-    <label>GitHub Personal Access Token (per salvataggio)</label>
-    <input type="password" id="inp-gh-token" placeholder="ghp_...">
-   </div>
-   <div class="row">
-    <div class="field">
-     <label>GitHub Owner</label>
-     <input type="text" id="inp-gh-owner" placeholder="Zizzo91">
-    </div>
-    <div class="field">
-     <label>GitHub Repo</label>
-     <input type="text" id="inp-gh-repo" placeholder="Storybook">
-    </div>
-   </div>
+   
    <div class="row" style="margin-top:10px">
-    <button class="btn btn-accent" id="btn-save-settings">💾 Salva impostazioni</button>
     <div id="status-settings" class="status"></div>
    </div>
   </div>
@@ -243,7 +229,7 @@ function readInputs(){
  S.idea=document.getElementById('inp-idea').value.trim();
 }
 async function callGroqText({ prompt, temperature=0.7, maxTokens=3500 }){
- if(!S.apiKey) throw new Error('⚠️ Inserisci la Groq API key.');
+ if(!S.apiKey) throw new Error('⚠️ Groq API key non caricata. Verifica config.json.');
  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
  method:'POST',
  headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${S.apiKey}` },
@@ -258,7 +244,7 @@ async function callGroqText({ prompt, temperature=0.7, maxTokens=3500 }){
  return data.choices[0].message.content.trim();
 }
 async function callGroqVision({ prompt, imageDataUrl }){
- if(!S.apiKey) throw new Error('⚠️ Inserisci la Groq API key.');
+ if(!S.apiKey) throw new Error('⚠️ Groq API key non caricata. Verifica config.json.');
  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
  method:'POST',
  headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${S.apiKey}` },
@@ -279,7 +265,7 @@ async function callGroqVision({ prompt, imageDataUrl }){
 document.getElementById('btn-github-save').addEventListener('click', async ()=>{
  readInputs();
  if(!S.ghToken || !S.ghOwner || !S.ghRepo){
- setStatus('status-story','Configura i dati GitHub nelle impostazioni.','err');
+ setStatus('status-story','GitHub non configurato correttamente in config.json.','err');
  return;
  }
  const btn = document.getElementById('btn-github-save');
@@ -332,17 +318,7 @@ document.getElementById('btn-github-save').addEventListener('click', async ()=>{
  btn.disabled = false;
  }
 });
-// --- SETTINGS ---
-document.getElementById('btn-save-settings').addEventListener('click', ()=>{
- readInputs();
- localStorage.setItem('storybook_settings', JSON.stringify({
- ghToken: S.ghToken, ghOwner: S.ghOwner, ghRepo: S.ghRepo,
- textModel: S.textModel, visionModel: S.visionModel
- }));
- setStatus('status-settings','Impostazioni salvate localmente ✓','ok');
-});
 window.addEventListener('load', async ()=>{
- // Try cloud config first
  try {
   const cloudRes = await fetch('.settings/config.json');
   if (cloudRes.ok) {
@@ -351,20 +327,34 @@ window.addEventListener('load', async ()=>{
    if (d.githubToken) document.getElementById('inp-gh-token').value = d.githubToken;
    if (d.githubOwner) document.getElementById('inp-gh-owner').value = d.githubOwner;
    if (d.githubRepo) document.getElementById('inp-gh-repo').value = d.githubRepo;
-   setStatus('status-settings', 'Configurazione caricata dal cloud ✓', 'ok');
+   setStatus('status-settings', 'Configurazione cloud caricata ✓', 'ok');
+  } else {
+   setStatus('status-settings', '⚠️ config.json non trovato.', 'err');
   }
- } catch(e) { console.log("Cloud config skip"); }
+ } catch(e) { 
+  setStatus('status-settings', 'Errore caricamento cloud.', 'err');
+ }
 
  const saved = localStorage.getItem('storybook_settings');
  if(saved){
   const d = JSON.parse(saved);
-  if (!document.getElementById('inp-gh-token').value) document.getElementById('inp-gh-token').value = d.ghToken || '';
-  if (!document.getElementById('inp-gh-owner').value) document.getElementById('inp-gh-owner').value = d.ghOwner || '';
-  if (!document.getElementById('inp-gh-repo').value) document.getElementById('inp-gh-repo').value = d.ghRepo || '';
   document.getElementById('inp-textmodel').value = d.textModel || 'llama-3.3-70b-versatile';
   document.getElementById('inp-visionmodel').value = d.visionModel || 'meta-llama/llama-4-scout-17b-16e-instruct';
  }
  readInputs();
+});
+// Update localstorage on change
+document.getElementById('inp-textmodel').addEventListener('change', () => {
+ localStorage.setItem('storybook_settings', JSON.stringify({
+  textModel: document.getElementById('inp-textmodel').value,
+  visionModel: document.getElementById('inp-visionmodel').value
+ }));
+});
+document.getElementById('inp-visionmodel').addEventListener('change', () => {
+ localStorage.setItem('storybook_settings', JSON.stringify({
+  textModel: document.getElementById('inp-textmodel').value,
+  visionModel: document.getElementById('inp-visionmodel').value
+ }));
 });
 // --- REST OF LOGIC (REFINED & GEN) ---
 document.getElementById('btn-refine').addEventListener('click', async ()=>{
