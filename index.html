@@ -147,6 +147,19 @@ h1,h2,h3{font-family:var(--font-display)}
         <button class="btn btn-accent" id="btn-save-settings">💾 Salva impostazioni</button>
         <div id="status-settings" class="status"></div>
       </div>
+
+      <hr style="margin:16px 0; border:0; border-top:1px solid var(--border);">
+      
+      <div class="card-title" style="font-size:14px">📂 Carica storia salvata</div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn btn-ghost" id="btn-github-list" style="flex:1">🔍 Cerca storie nel repo</button>
+      </div>
+      <div class="field" id="gh-list-container" style="display:none; margin-top:10px">
+        <label>Seleziona storia</label>
+        <select id="inp-gh-storiestlist"></select>
+        <button class="btn btn-cyan" id="btn-github-load" style="margin-top:8px">📖 Apri storia selezionata</button>
+      </div>
+      <div id="status-gh-load" class="status"></div>
     </div>
 
     <div class="card">
@@ -201,7 +214,7 @@ const S = {
   ghToken: '', ghOwner: '', ghRepo: '',
   textModel: 'llama-3.3-70b-versatile',
   visionModel: 'meta-llama/llama-4-scout-17b-16e-instruct',
-  title: '', audience: '', tone: '', world: '', idea: '', shortVersion: '',
+  title: '', audience: '', tone: '', idea: '', shortVersion: '',
   chapters: [], characters: []
 };
 
@@ -286,7 +299,7 @@ async function callGroqVision({ prompt, imageDataUrl }){
   return data.choices[0].message.content.trim();
 }
 
-// --- GITHUB SAVE ---
+// --- GITHUB SAVE/LOAD ---
 document.getElementById('btn-github-save').addEventListener('click', async ()=>{
   readInputs();
   if(!S.ghToken || !S.ghOwner || !S.ghRepo){
@@ -312,8 +325,6 @@ document.getElementById('btn-github-save').addEventListener('click', async ()=>{
     };
 
     const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(storyData, null, 2))));
-    
-    // Check if file exists to get SHA
     let sha = '';
     const checkRes = await fetch(`https://api.github.com/repos/${S.ghOwner}/${S.ghRepo}/contents/${path}`, {
       headers: { 'Authorization': `token ${S.ghToken}` }
@@ -325,28 +336,77 @@ document.getElementById('btn-github-save').addEventListener('click', async ()=>{
 
     const saveRes = await fetch(`https://api.github.com/repos/${S.ghOwner}/${S.ghRepo}/contents/${path}`, {
       method: 'PUT',
-      headers: {
-        'Authorization': `token ${S.ghToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: `Save story: ${S.title}`,
-        content: contentBase64,
-        sha: sha || undefined
-      })
+      headers: { 'Authorization': `token ${S.ghToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Save story: ${S.title}`, content: contentBase64, sha: sha || undefined })
     });
+    if(!saveRes.ok) throw new Error('Errore salvataggio GitHub');
+    setStatus('status-story','Storia salvata con successo! ✓','ok');
+  } catch (e) { setStatus('status-story', e.message, 'err'); }
+  finally { btn.disabled = false; }
+});
 
-    if(!saveRes.ok) {
-      const err = await saveRes.json();
-      throw new Error(err.message || 'Errore salvataggio GitHub');
-    }
+document.getElementById('btn-github-list').addEventListener('click', async ()=>{
+  readInputs();
+  if(!S.ghToken || !S.ghOwner || !S.ghRepo) return alert('Configura GitHub prima.');
+  setStatus('status-gh-load','Recupero lista storie...','warn');
+  try {
+    const res = await fetch(`https://api.github.com/repos/${S.ghOwner}/${S.ghRepo}/contents/stories`, {
+      headers: { 'Authorization': `token ${S.ghToken}` }
+    });
+    if(!res.ok) throw new Error('Cartella "stories" non trovata nel repo.');
+    const files = await res.json();
+    const jsons = files.filter(f => f.name.endsWith('.json'));
+    const sel = document.getElementById('inp-gh-storiestlist');
+    sel.innerHTML = '';
+    jsons.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.path;
+      opt.textContent = f.name;
+      sel.appendChild(opt);
+    });
+    document.getElementById('gh-list-container').style.display = 'block';
+    setStatus('status-gh-load',`${jsons.length} storie trovate ✓`,'ok');
+  } catch(e) { setStatus('status-gh-load', e.message, 'err'); }
+});
 
-    setStatus('status-story','Storia salvata con successo su GitHub! ✓','ok');
-  } catch (e) {
-    setStatus('status-story', e.message, 'err');
-  } finally {
-    btn.disabled = false;
-  }
+document.getElementById('btn-github-load').addEventListener('click', async ()=>{
+  const path = document.getElementById('inp-gh-storiestlist').value;
+  if(!path) return;
+  setStatus('status-gh-load','Caricamento storia...','warn');
+  try {
+    const res = await fetch(`https://api.github.com/repos/${S.ghOwner}/${S.ghRepo}/contents/${path}`, {
+      headers: { 'Authorization': `token ${S.ghToken}` }
+    });
+    const data = await res.json();
+    const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+    
+    // Auto-compilazione
+    document.getElementById('inp-title').value = content.title || '';
+    document.getElementById('inp-audience').value = content.audience || '';
+    document.getElementById('inp-tone').value = content.tone || '';
+    document.getElementById('inp-idea').value = content.idea || '';
+    document.getElementById('short-story-box').textContent = content.shortVersion || '';
+    
+    S.title = content.title;
+    S.audience = content.audience;
+    S.tone = content.tone;
+    S.idea = content.idea;
+    S.shortVersion = content.shortVersion;
+    
+    // Ripristino personaggi
+    S.characters = (content.characters || []).map(c => ({
+      id: uid(), name: c.name, description: c.description, imageDataUrl: ''
+    }));
+    renderCharacters();
+    
+    // Ripristino capitoli
+    S.chapters = (content.chapters || []).map(ch => ({
+      number: ch.number, title: ch.title, text: ch.text, characters: ch.characters || []
+    }));
+    renderChapters();
+    
+    setStatus('status-gh-load','Storia caricata con successo! ✓','ok');
+  } catch(e) { setStatus('status-gh-load', e.message, 'err'); }
 });
 
 // --- SETTINGS ---
@@ -356,7 +416,7 @@ document.getElementById('btn-save-settings').addEventListener('click', ()=>{
     ghToken: S.ghToken, ghOwner: S.ghOwner, ghRepo: S.ghRepo,
     textModel: S.textModel, visionModel: S.visionModel
   }));
-  setStatus('status-settings','Impostazioni salvate localmente ✓','ok');
+  setStatus('status-settings','Impostazioni salvate ✓','ok');
 });
 
 window.addEventListener('load', ()=>{
@@ -372,7 +432,7 @@ window.addEventListener('load', ()=>{
   }
 });
 
-// --- REST OF LOGIC (REFINED & GEN) ---
+// --- CORE LOGIC ---
 document.getElementById('btn-refine').addEventListener('click', async ()=>{
   readInputs();
   if(!S.idea) return setStatus('status-story','Scrivi un\'idea base.','err');
@@ -397,11 +457,9 @@ document.getElementById('btn-genstory').addEventListener('click', async ()=>{
     const prompt = `Genera i primi 5 capitoli di una storia basata su: ${S.shortVersion || S.idea}. Restituisci SOLO un array JSON: [{"number":1,"title":"...","text":"...","characters":["..."]}]`;
     const res1 = await callGroqText({ prompt });
     const chapters1 = extractJson(res1);
-    
     setStatus('status-story','Generazione capitoli (6-10)...','warn');
     const res2 = await callGroqText({ prompt: `Continua la storia dopo questi capitoli: ${res1}. Genera i capitoli 6-10. Stesso formato JSON.` });
     const chapters2 = extractJson(res2);
-    
     S.chapters = [...chapters1, ...chapters2];
     renderChapters();
     setStatus('status-story','10 capitoli pronti! ✓','ok');
@@ -445,10 +503,7 @@ async function uploadImg(id, input){
   const file = input.files[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
-    updateChar(id, 'imageDataUrl', e.target.result);
-    renderCharacters();
-  };
+  reader.onload = e => { updateChar(id, 'imageDataUrl', e.target.result); renderCharacters(); };
   reader.readAsDataURL(file);
 }
 
