@@ -118,7 +118,6 @@ h1,h2,h3{font-family:var(--font-display)}
     </select>
    </div>
    
-   <!-- Hidden settings fields -->
    <div style="display:none">
     <input type="password" id="inp-apikey">
     <input type="password" id="inp-gh-token">
@@ -229,7 +228,7 @@ function readInputs(){
  S.idea=document.getElementById('inp-idea').value.trim();
 }
 async function callGroqText({ prompt, temperature=0.7, maxTokens=3500 }){
- if(!S.apiKey) throw new Error('⚠️ Groq API key non caricata. Verifica config.json.');
+ if(!S.apiKey) throw new Error('⚠️ Groq API key non caricata. Verifica .settings/config.json.');
  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
  method:'POST',
  headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${S.apiKey}` },
@@ -244,7 +243,7 @@ async function callGroqText({ prompt, temperature=0.7, maxTokens=3500 }){
  return data.choices[0].message.content.trim();
 }
 async function callGroqVision({ prompt, imageDataUrl }){
- if(!S.apiKey) throw new Error('⚠️ Groq API key non caricata. Verifica config.json.');
+ if(!S.apiKey) throw new Error('⚠️ Groq API key non caricata. Verifica .settings/config.json.');
  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
  method:'POST',
  headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${S.apiKey}` },
@@ -261,11 +260,10 @@ async function callGroqVision({ prompt, imageDataUrl }){
  if(!res.ok) throw new Error(data.error?.message || 'Errore Groq Vision');
  return data.choices[0].message.content.trim();
 }
-// --- GITHUB SAVE ---
 document.getElementById('btn-github-save').addEventListener('click', async ()=>{
  readInputs();
  if(!S.ghToken || !S.ghOwner || !S.ghRepo){
- setStatus('status-story','GitHub non configurato correttamente in config.json.','err');
+ setStatus('status-story','GitHub non configurato correttamente in .settings/config.json.','err');
  return;
  }
  const btn = document.getElementById('btn-github-save');
@@ -286,7 +284,6 @@ document.getElementById('btn-github-save').addEventListener('click', async ()=>{
  };
  const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(storyData, null, 2))));
  
- // Check if file exists to get SHA
  let sha = '';
  const checkRes = await fetch(`https://api.github.com/repos/${S.ghOwner}/${S.ghRepo}/contents/${path}`, {
  headers: { 'Authorization': `token ${S.ghToken}` }
@@ -329,12 +326,11 @@ window.addEventListener('load', async ()=>{
    if (d.githubRepo) document.getElementById('inp-gh-repo').value = d.githubRepo;
    setStatus('status-settings', 'Configurazione cloud caricata ✓', 'ok');
   } else {
-   setStatus('status-settings', '⚠️ config.json non trovato.', 'err');
+   setStatus('status-settings', '⚠️ .settings/config.json non trovato.', 'err');
   }
  } catch(e) { 
   setStatus('status-settings', 'Errore caricamento cloud.', 'err');
  }
-
  const saved = localStorage.getItem('storybook_settings');
  if(saved){
   const d = JSON.parse(saved);
@@ -343,7 +339,6 @@ window.addEventListener('load', async ()=>{
  }
  readInputs();
 });
-// Update localstorage on change
 document.getElementById('inp-textmodel').addEventListener('change', () => {
  localStorage.setItem('storybook_settings', JSON.stringify({
   textModel: document.getElementById('inp-textmodel').value,
@@ -356,7 +351,6 @@ document.getElementById('inp-visionmodel').addEventListener('change', () => {
   visionModel: document.getElementById('inp-visionmodel').value
  }));
 });
-// --- REST OF LOGIC (REFINED & GEN) ---
 document.getElementById('btn-refine').addEventListener('click', async ()=>{
  readInputs();
  if(!S.idea) return setStatus('status-story','Scrivi un\'idea base.','err');
@@ -380,11 +374,9 @@ document.getElementById('btn-genstory').addEventListener('click', async ()=>{
  const prompt = `Genera i primi 5 capitoli di una storia basata su: ${S.shortVersion || S.idea}. Restituisci SOLO un array JSON: [{"number":1,"title":"...","text":"...","characters":["..."]}]`;
  const res1 = await callGroqText({ prompt });
  const chapters1 = extractJson(res1);
- 
  setStatus('status-story','Generazione capitoli (6-10)...','warn');
  const res2 = await callGroqText({ prompt: `Continua la storia dopo questi capitoli: ${res1}. Genera i capitoli 6-10. Stesso formato JSON.` });
  const chapters2 = extractJson(res2);
- 
  S.chapters = [...chapters1, ...chapters2];
  renderChapters();
  setStatus('status-story','10 capitoli pronti! ✓','ok');
